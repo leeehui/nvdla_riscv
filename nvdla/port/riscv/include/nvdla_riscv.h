@@ -36,6 +36,14 @@
 #define __LINUX_NVDLA_LINUX_H_
 
 
+struct nvdla_mem_handle {
+    uint64_t paddr;
+};
+
+struct nvdla_submit_task {
+    uint32_t num_addresses;
+    uint64_t base_address;
+};
 /**
  * @brief			Task information submitted from user space
  *
@@ -50,7 +58,7 @@ struct nvdla_task {
 	uint32_t num_addresses;
 	struct nvdla_device *nvdla_dev;
 	struct nvdla_mem_handle *address_list;
-	struct drm_file *file;
+	//struct drm_file *file;
 };
 
 /**

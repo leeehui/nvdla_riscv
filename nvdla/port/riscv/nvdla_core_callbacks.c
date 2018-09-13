@@ -62,14 +62,26 @@ void dla_debug(const char *str, ...)
 
 void dla_info(const char *str, ...)
 {
+	va_list args;
+	va_start(args, str);
+	vprintf(str, args);
+	va_end(args);
 }
 
 void dla_warn(const char *str, ...)
 {
+	va_list args;
+	va_start(args, str);
+	vprintf(str, args);
+	va_end(args);
 }
 
 void dla_error(const char *str, ...)
 {
+	va_list args;
+	va_start(args, str);
+	vprintf(str, args);
+	va_end(args);
 }
 
 void *dla_memset(void *src, int ch, uint64_t len)
@@ -84,7 +96,7 @@ void *dla_memcpy(void *dest, const void *src, uint64_t len)
 
 int64_t dla_get_time_us(void)
 {
-    return 1;
+    return 0;
 }
 
 void dla_reg_write(void *driver_context, uint32_t addr, uint32_t reg)
@@ -95,7 +107,7 @@ void dla_reg_write(void *driver_context, uint32_t addr, uint32_t reg)
 	if (!nvdla_dev)
 		return;
 
-	//writel(reg, nvdla_dev->base + addr);
+    *(volatile uint32_t *)(uintptr_t)(addr) = reg;
 }
 
 uint32_t dla_reg_read(void *driver_context, uint32_t addr)
@@ -107,7 +119,7 @@ uint32_t dla_reg_read(void *driver_context, uint32_t addr)
 	if (!nvdla_dev)
 		return 0;
 
-    val = 1;//readl(nvdla_dev->base + addr);
+    val = *(volatile uint32_t *)(uintptr_t)(addr);
 	return val;
 }
 
@@ -119,12 +131,10 @@ static void  nvdla_engine_isr(int32_t irq, void *data)
 	if (!nvdla_dev)
 		return;
 
-	//spin_lock_irqsave(&nvdla_dev->nvdla_lock, flags);
 	dla_isr_handler(nvdla_dev->engine_context);
-	//complete(&nvdla_dev->event_notifier);
-	//spin_unlock_irqrestore(&nvdla_dev->nvdla_lock, flags);
 
-	//return IRQ_HANDLED;
+    //TODO: notify main function
+
     return;
 }
 
@@ -194,38 +204,11 @@ int32_t dla_data_write(void *driver_context, void *task_data,
 	struct nvdla_mem_handle *handles;
 	struct nvdla_task *task = (struct nvdla_task *)task_data;
 
-	//handles = task->address_list;
-	//buf = dma_buf_get(handles[dst].handle);
-	//if (IS_ERR(buf)) {
-	//	pr_err("%s: Failed get dma_buf for handle=%d\n", __func__,
-	//					handles[dst].handle);
-	//	return -EFAULT;
-	//}
 
-	//ret = dma_buf_begin_cpu_access(buf, DMA_BIDIRECTIONAL);
-	//if (ret)
-	//	goto put_dma_buf;
-
-	//ptr = dma_buf_vmap(buf);
-	//if (!ptr) {
-	//	pr_err("%s: Failed to vmap dma_buf for handle=%d\n", __func__,
-	//					handles[dst].handle);
-	//	ret = -ENOMEM;
-	//	goto end_cpu_access;
-	//}
-
+    //TODO: get real addr
 
 	memcpy((void *)((uint8_t *)ptr + offset), src, size);
 
-    //dla_debug("dla_data_write: src(%p), dst(%p)\n", src, (void *)((uint8_t *)ptr + offset));
-
-//	dma_buf_vunmap(buf, ptr);
-//
-//end_cpu_access:
-//	dma_buf_end_cpu_access(buf, DMA_BIDIRECTIONAL);
-//
-//put_dma_buf:
-//	dma_buf_put(buf);
 
 	return ret;
 }
@@ -239,39 +222,10 @@ int32_t dla_data_read(void *driver_context, void *task_data,
 	struct nvdla_mem_handle *handles;
 	struct nvdla_task *task = (struct nvdla_task *)task_data;
 
-	//handles = task->address_list;
-
-	//buf = dma_buf_get(handles[src].handle);
-	//if (IS_ERR(buf)) {
-	//	pr_err("%s: Failed get dma_buf for handle=%d\n", __func__,
-	//					handles[src].handle);
-	//	return -EFAULT;
-	//}
-
-	//ret = dma_buf_begin_cpu_access(buf, DMA_BIDIRECTIONAL);
-	//if (ret)
-	//	goto put_dma_buf;
-
-	//ptr = dma_buf_vmap(buf);
-	//if (!ptr) {
-	//	pr_err("%s: Failed to vmap dma_buf for handle=%d\n", __func__,
-	//					handles[src].handle);
-	//	ret = -ENOMEM;
-	//	goto end_cpu_access;
-	//}
+    //TODO: get real addr
 
 	memcpy(dst, (void *)(((uint8_t *)ptr) + offset), size);
 
-//    dla_debug("dla_data_read: src(%p), dst(%p)\n", (void *)((uint8_t *)ptr + offset), dst);
-//
-//	dma_buf_vunmap(buf, ptr);
-//
-//end_cpu_access:
-//	dma_buf_end_cpu_access(buf, DMA_BIDIRECTIONAL);
-//
-//put_dma_buf:
-//	dma_buf_put(buf);
-//
 	return ret;
 }
 
@@ -292,6 +246,8 @@ int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_task *tas
 
 	while (1) {
 
+        //TODO: wait for interrupt
+
 		err = dla_process_events(nvdla_dev->engine_context, &task_complete);
 
 		if (err || task_complete)
@@ -300,6 +256,60 @@ int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_task *tas
 
 	dla_clear_task(nvdla_dev->engine_context);
 
+	return err;
+}
+
+static int32_t nvdla_fill_task_desc(struct nvdla_submit_task *local_task, struct nvdla_task *task)
+{
+	struct nvdla_mem_handle *handles;
+
+	/* update task desc fields */
+	task->num_addresses = local_task->num_addresses;
+
+	handles = malloc(local_task->num_addresses *
+				sizeof(struct nvdla_mem_handle));
+	if (handles == NULL)
+		return -1;
+
+    //TODO :
+
+    //copy data
+
+
+	task->address_list = handles;
+
+	return 0;
+}
+
+
+int32_t nvdla_submit(struct nvdla_submit_task *local_task)
+{
+	int32_t err = 0;
+	struct nvdla_task *task;
+    
+
+	struct nvdla_device *nvdla_dev ;//= dev_get_drvdata(drm->dev);
+
+	task = malloc(sizeof(*task));
+	if (task == NULL)
+		return -1;
+
+	nvdla_dev->task = task;
+
+	task->nvdla_dev = nvdla_dev;
+	//task->file = file;
+
+	/* update task desc fields */
+	err = nvdla_fill_task_desc(local_task, task);
+	if (err)
+		goto free_task_desc;
+
+	err = nvdla_task_submit(nvdla_dev, task);
+
+    free(task->address_list);
+
+free_task_desc:
+	free(task);
 	return err;
 }
 
