@@ -14,9 +14,10 @@ enable_language(ASM)
 
 set(SOURCE_FILES
         ./startup.S
+        ./helpers.S
         ./main.c
         ./port/std_syscall.c
-
+        ./interrupt.c
     )
 set(NVDLA_SRC_FILES
     ${NVDLA_DIR}/firmware/scheduler.c

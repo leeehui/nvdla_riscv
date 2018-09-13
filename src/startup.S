@@ -101,9 +101,14 @@ enable_MMU:
   .option norvc;
 
   .org 0x00
-  .rept 20
+  .rept 29 //29+3=32
   nop
   .endr
+
+  //TODO:need apply the order against real design
+  j ISR_WDT_ASM
+  j ISR_TIMER_ASM
+  j ISR_NVDLA_ASM
 
   //reset handler
   .org 0x80
