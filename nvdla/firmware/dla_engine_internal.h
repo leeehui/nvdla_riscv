@@ -84,42 +84,40 @@
 #define RBK_REG(name)                RBK_##name##_0
 
 /* alias for register read for each sub-module */
-#define glb_reg_read(reg)           reg_read(GLB_REG(reg), "GLB_", #reg, "_0")
-#define bdma_reg_read(reg)          reg_read(BDMA_REG(reg), "BDMA_", #reg, "_0")
-#define cdma_reg_read(reg)          reg_read(CDMA_REG(reg), "CDMA_", #reg, "_0")
-#define csc_reg_read(reg)           reg_read(CSC_REG(reg), "CSC_", #reg, "_0")
-#define cmac_a_reg_read(reg)        reg_read(CMAC_A_REG(reg), "CMAC_A_", #reg, "_0")
-#define cmac_b_reg_read(reg)        reg_read(CMAC_B_REG(reg), "CMAC_B_", #reg, "_0")
-#define cacc_reg_read(reg)          reg_read(CACC_REG(reg), "CACC_", #reg, "_0")
-#define sdp_rdma_reg_read(reg)      reg_read(SDP_RDMA_REG(reg), "SDP_RDMA_", #reg, "_0")
-#define sdp_reg_read(reg)           reg_read(SDP_REG(reg), "SDP_", #reg, "_0")
-#define pdp_rdma_reg_read(reg)      reg_read(PDP_RDMA_REG(reg), "PDP_RDMA_", #reg, "_0")
-#define pdp_reg_read(reg)           reg_read(PDP_REG(reg), "PDP_", #reg, "_0")
-#define cdp_rdma_reg_read(reg)      reg_read(CDP_RDMA_REG(reg), "CDP_RDMA_", #reg, "_0")
-#define cdp_reg_read(reg)           reg_read(CDP_REG(reg), "CDP_", #reg, "_0")
-#define rubik_reg_read(reg)         reg_read(RBK_REG(reg), "RBK_", #reg, "_0")
+#define glb_reg_read(reg)           reg_read(GLB_REG(reg))
+#define bdma_reg_read(reg)          reg_read(BDMA_REG(reg))
+#define cdma_reg_read(reg)          reg_read(CDMA_REG(reg))
+#define csc_reg_read(reg)           reg_read(CSC_REG(reg))
+#define cmac_a_reg_read(reg)        reg_read(CMAC_A_REG(reg))
+#define cmac_b_reg_read(reg)        reg_read(CMAC_B_REG(reg))
+#define cacc_reg_read(reg)          reg_read(CACC_REG(reg))
+#define sdp_rdma_reg_read(reg)      reg_read(SDP_RDMA_REG(reg))
+#define sdp_reg_read(reg)           reg_read(SDP_REG(reg))
+#define pdp_rdma_reg_read(reg)      reg_read(PDP_RDMA_REG(reg))
+#define pdp_reg_read(reg)           reg_read(PDP_REG(reg))
+#define cdp_rdma_reg_read(reg)      reg_read(CDP_RDMA_REG(reg))
+#define cdp_reg_read(reg)           reg_read(CDP_REG(reg))
+#define rubik_reg_read(reg)         reg_read(RBK_REG(reg))
 
 /* alias for register write for each sub-module */
-#define glb_reg_write(reg, val)      do { dla_debug("GLB_%s_0 \n", #reg); reg_write(GLB_REG(reg), val);} while(0)
-#define bdma_reg_write(reg, val)     do { dla_debug("BDMA_%s_0 \n", #reg); reg_write(BDMA_REG(reg), val);} while(0)
-#define cdma_reg_write(reg, val)     do { dla_debug("CDMA_%s_0 \n", #reg); reg_write(CDMA_REG(reg), val);} while(0)
-#define csc_reg_write(reg, val)      do { dla_debug("CSC_%s_0 \n", #reg); reg_write(CSC_REG(reg), val);} while(0)
-#define cmac_a_reg_write(reg, val)   do { dla_debug("CMAC_A_%s_0 \n", #reg); reg_write(CMAC_A_REG(reg), val);} while(0)
-#define cmac_b_reg_write(reg, val)   do { dla_debug("CMAC_B_%s_0 \n", #reg); reg_write(CMAC_B_REG(reg), val);} while(0)
-#define cacc_reg_write(reg, val)     do { dla_debug("CACC_%s_0 \n", #reg); reg_write(CACC_REG(reg), val);} while(0)
-#define sdp_rdma_reg_write(reg, val) do { dla_debug("SDP_RDMA_%s_0 \n", #reg); reg_write(SDP_RDMA_REG(reg), val);} while(0)
-#define sdp_reg_write(reg, val)      do { dla_debug("SDP_%s_0 \n", #reg); reg_write(SDP_REG(reg), val);} while(0)
-#define pdp_rdma_reg_write(reg, val) do { dla_debug("PDP_RDMA_%s_0 \n", #reg); reg_write(PDP_RDMA_REG(reg), val);} while(0)
-#define pdp_reg_write(reg, val)      do { dla_debug("PDP_%s_0 \n", #reg); reg_write(PDP_REG(reg), val);} while(0)
-#define cdp_rdma_reg_write(reg, val) do { dla_debug("CDP_RDMA_%s_0 \n", #reg); reg_write(CDP_RDMA_REG(reg), val);} while(0)
-#define cdp_reg_write(reg, val)      do { dla_debug("CDP_%s_0 \n", #reg); reg_write(CDP_REG(reg), val);} while(0)
-#define rubik_reg_write(reg, val)    do { dla_debug("RBK_%s_0 \n", #reg); reg_write(RBK_REG(reg), val);} while(0)
+#define glb_reg_write(reg, val)      reg_write(GLB_REG(reg), val)
+#define bdma_reg_write(reg, val)     reg_write(BDMA_REG(reg), val)
+#define cdma_reg_write(reg, val)     reg_write(CDMA_REG(reg), val)
+#define csc_reg_write(reg, val)      reg_write(CSC_REG(reg), val)
+#define cmac_a_reg_write(reg, val)   reg_write(CMAC_A_REG(reg), val)
+#define cmac_b_reg_write(reg, val)   reg_write(CMAC_B_REG(reg), val)
+#define cacc_reg_write(reg, val)     reg_write(CACC_REG(reg), val)
+#define sdp_rdma_reg_write(reg, val) reg_write(SDP_RDMA_REG(reg), val)
+#define sdp_reg_write(reg, val)      reg_write(SDP_REG(reg), val)
+#define pdp_rdma_reg_write(reg, val) reg_write(PDP_RDMA_REG(reg), val)
+#define pdp_reg_write(reg, val)      reg_write(PDP_REG(reg), val)
+#define cdp_rdma_reg_write(reg, val) reg_write(CDP_RDMA_REG(reg), val)
+#define cdp_reg_write(reg, val)      reg_write(CDP_REG(reg), val)
+#define rubik_reg_write(reg, val)    reg_write(RBK_REG(reg), val)
 
 void reg_write(uint32_t addr, uint32_t reg);
-//uint32_t reg_read(uint32_t addr, const char* name);
+uint32_t reg_read(uint32_t addr);
 
-uint32_t reg_read_nolog(uint32_t addr);
-uint32_t reg_read(uint32_t addr, const char* reg_prefix, const char *reg_name, const char *reg_suffix);
 /**
  * Operation descriptor cache functions
  */

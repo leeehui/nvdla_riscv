@@ -43,10 +43,8 @@ int32_t dla_isr_handler(void *engine_data)
 	struct dla_processor *processor = NULL;
 	struct dla_processor_group *group;
 	struct dla_engine *engine = (struct dla_engine *)engine_data;
-    static uint32_t index = 0;
 
 
-	dla_debug("you should wait here.");
 	dla_debug("Enter: dla_isr_handler.");
 	mask = glb_reg_read(S_INTR_MASK);
 	reg = glb_reg_read(S_INTR_STATUS);
@@ -70,11 +68,6 @@ int32_t dla_isr_handler(void *engine_data)
 		processor = &engine->processors[DLA_OP_SDP];
 		group = &processor->groups[1];
 		group->events |= (1 << DLA_EVENT_OP_COMPLETED);
-        index++;
-        if (index == 4) {
-            dla_debug("first sdp_1 done, result in mem index 60 and 61\n");
-            dump_flag = 1;
-        }
 	}
 	if (reg & MASK(GLB_S_INTR_STATUS_0, CDP_DONE_STATUS0)) {
 		processor = &engine->processors[DLA_OP_CDP];
@@ -100,11 +93,6 @@ int32_t dla_isr_handler(void *engine_data)
 		processor = &engine->processors[DLA_OP_PDP];
 		group = &processor->groups[0];
 		group->events |= (1 << DLA_EVENT_OP_COMPLETED);
-//        index++;
-//        if (index == 1) {
-//            dla_debug("first sdp_1 done, result in mem index 60 and 61\n");
-//            dump_flag = 1;
-//        }
 	}
 	if (reg & MASK(GLB_S_INTR_STATUS_0, PDP_DONE_STATUS1)) {
 		processor = &engine->processors[DLA_OP_PDP];

@@ -10,11 +10,12 @@
   .globl __BSS_START__
   .globl __BSS_END__
 
+  .globl ISR_WDT_ASM
+  .globl ISR_TIMER_ASM
+  .globl ISR_NVDLA_ASM
+
+
   .section .text
-
-//_start:
-//  j reset_handler
-
 reset_handler:
 1:
   la sp, __STACKS_END__

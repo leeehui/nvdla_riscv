@@ -292,16 +292,11 @@ int32_t dla_register_driver(void **engine_context, void *driver_context)
 	RETURN(0);
 }
 
-uint32_t reg_read_nolog(uint32_t addr)
+uint32_t reg_read(uint32_t addr)
 {
 	return dla_reg_read(engine.driver_context, addr);
 }
 
-uint32_t reg_read(uint32_t addr, const char* reg_prefix, const char *reg_name, const char *reg_suffix)
-{
-    dla_debug("%s%s%s \n", reg_prefix, reg_name, reg_suffix);
-	return dla_reg_read(engine.driver_context, addr);
-}
 
 void reg_write(uint32_t addr, uint32_t reg)
 {

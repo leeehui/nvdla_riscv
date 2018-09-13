@@ -15,6 +15,7 @@ enable_language(ASM)
 set(SOURCE_FILES
         ./startup.S
         ./main.c
+        ./port/std_syscall.c
 
     )
 set(NVDLA_SRC_FILES
@@ -56,7 +57,7 @@ set(CMAKE_ASM_FLAGS "-march=rv64ima -mabi=lp64")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-pic")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g")
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --specs=nano.specs")         #uncomment this for using nano stdlib
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --specs=nano.specs")         #uncomment this for using nano stdlib
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -nostartfiles")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,--relax")

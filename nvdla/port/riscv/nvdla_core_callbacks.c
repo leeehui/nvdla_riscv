@@ -32,7 +32,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-//#include <stdarg.h>
+#include <stdarg.h>
 
 #include <nvdla_interface.h>
 #include <nvdla_riscv.h>
@@ -54,10 +54,10 @@ static struct nvdla_config nvdla_config_small = {
 
 void dla_debug(const char *str, ...)
 {
-//	va_list args;
-//	va_start(args, str);
-//	vprintk(pr_fmt(str), args);
-//	va_end(args);
+	va_list args;
+	va_start(args, str);
+	vprintf(str, args);
+	va_end(args);
 }
 
 void dla_info(const char *str, ...)
@@ -120,7 +120,7 @@ static void  nvdla_engine_isr(int32_t irq, void *data)
 		return;
 
 	//spin_lock_irqsave(&nvdla_dev->nvdla_lock, flags);
-	//dla_isr_handler(nvdla_dev->engine_context);
+	dla_isr_handler(nvdla_dev->engine_context);
 	//complete(&nvdla_dev->event_notifier);
 	//spin_unlock_irqrestore(&nvdla_dev->nvdla_lock, flags);
 

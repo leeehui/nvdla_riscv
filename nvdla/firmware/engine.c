@@ -183,33 +183,13 @@ utils_get_free_group(struct dla_processor *processor,
 	hw_rdma_ptr = 0;
 
 	if (processor->op_type == DLA_OP_BDMA) {
-        dla_debug("BDMA_STATUS_0 \n");
-		pointer = reg_read_nolog(map_ptr_addr[processor->op_type]);
+		pointer = reg_read(map_ptr_addr[processor->op_type]);
 		hw_consumer_ptr = ((pointer & MASK(BDMA_STATUS_0, GRP0_BUSY)) >>
 				SHIFT(BDMA_STATUS_0, GRP0_BUSY)) ==
 				FIELD_ENUM(BDMA_STATUS_0, GRP0_BUSY, YES) ?
 				1 : 0;
 	} else {
-        switch(processor->op_type)
-        {
-            case 1:
-                dla_debug("CACC_S_POINTER_0 \n");
-                break;
-            case 2:
-                dla_debug("SDP_S_POINTER_0 \n");
-                break;
-            case 3:
-                dla_debug("PDP_S_POINTER_0 \n");
-                break;
-            case 4:
-                dla_debug("CDP_S_POINTER_0 \n");
-                break;
-            case 5:
-                dla_debug("RBK_S_POINTER_0 \n");
-                break;
-            default: break;
-        }
-		pointer = reg_read_nolog(map_ptr_addr[processor->op_type]);
+		pointer = reg_read(map_ptr_addr[processor->op_type]);
 		hw_consumer_ptr = (pointer & MASK(CDP_S_POINTER_0, CONSUMER)) >>
 				SHIFT(CDP_S_POINTER_0, CONSUMER);
 
@@ -218,21 +198,8 @@ utils_get_free_group(struct dla_processor *processor,
 		 * has RDMA module
 		 */
 		if (map_rdma_ptr_addr[processor->op_type] != 0xFFFFFFFF) {
-            switch(processor->op_type)
-            {
-                case 2:
-                    dla_debug("SDP_RDMA_S_POINTER_0 \n");
-                    break;
-                case 3:
-                    dla_debug("PDP_RDMA_S_POINTER_0 \n");
-                    break;
-                case 4:
-                    dla_debug("CDP_RDMA_S_POINTER_0 \n");
-                    break;
-                default: break;
-            }
 			pointer =
-			reg_read_nolog(map_rdma_ptr_addr[processor->op_type]);
+			reg_read(map_rdma_ptr_addr[processor->op_type]);
 			hw_rdma_ptr = (pointer &
 					MASK(CDP_S_POINTER_0, CONSUMER)) >>
 					SHIFT(CDP_S_POINTER_0, CONSUMER);
@@ -248,13 +215,10 @@ utils_get_free_group(struct dla_processor *processor,
 	}
 
 	if (!processor->group_status)
-    {
 		/**
 		 * If both groups are idle then use consumer pointer
 		 */
 		*group_id = hw_consumer_ptr;
-        dla_debug("group_status is 0\n");
-    }
 	else
 		/**
 		 * Here it is assumed that only one group is idle or busy
@@ -267,10 +231,7 @@ utils_get_free_group(struct dla_processor *processor,
 	 * If both groups are idle then read group id from pointer
 	 */
 	if (!processor->rdma_status)
-    {
 		*rdma_id = hw_rdma_ptr;
-        dla_debug("rdma_status is 0\n");
-    }
 	else
 		*rdma_id = !(processor->rdma_status >> 1);
 

@@ -30,6 +30,7 @@
 #define __NVDLA_INTERFACE_H_
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
