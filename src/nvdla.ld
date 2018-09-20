@@ -51,7 +51,7 @@ SECTIONS
     .heap :
     {
         . = ALIGN(4);
-        *(heap_lcc);
+        *(heap_riscv);
     } >RAM
     /* bss: uninitialized data segment */
     

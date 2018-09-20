@@ -84,44 +84,72 @@ irq_disable:
 
    	
 ISR_WDT_ASM:
-  addi sp, sp, -16
-  sw ra, 12(sp)
-  sw a3, 8(sp) 
-  sw a4, 4(sp) 
-  sw a5, 0(sp) 
+  addi sp, sp, -128 #8*16
+  sd ra, 120(sp)
+  jal SAVE_TEMP_REGS
   jal ISR_WDT
-  lw a5, 0(sp)
-  lw a4, 4(sp)
-  lw a3, 8(sp)
-  lw ra, 12(sp)
-  addi sp, sp, 16
+  jal RESTORE_TEMP_REGS
+  ld ra, 120(sp)
+  addi sp, sp, 128 #8*16
   mret
 
 ISR_TIMER_ASM:
-  addi sp, sp, -12
-  sw ra, 8(sp)
-  sw a4, 4(sp) 
-  sw a5, 0(sp) 
+  addi sp, sp, -128 #8*16
+  sd ra, 120(sp)
+  jal SAVE_TEMP_REGS
   jal ISR_TIMER
-  lw a5, 0(sp)
-  lw a4, 4(sp)
-  lw ra, 8(sp)
-  addi sp, sp, 12
+  jal RESTORE_TEMP_REGS
+  ld ra, 120(sp)
+  addi sp, sp, 128 #8*16
   mret
   
 ISR_NVDLA_ASM:
-  addi sp, sp, -16
-  sw ra, 12(sp)
-  sw a3, 8(sp) 
-  sw a4, 4(sp) 
-  sw a5, 0(sp) 
-  jal ISR_NVDLA
-  lw a5, 0(sp)
-  lw a4, 4(sp)
-  lw a3, 8(sp)
-  lw ra, 12(sp)
-  addi sp, sp, 16
-  mret
+	addi sp, sp, -128 #8*16
+	sd ra, 120(sp)
+	#according to calling convention, 
+	#jal offset is equivalent to jal ra, offset,
+	#so ra will be repalced when executing following instruction, 
+	#this is why we save ra first. 
+	jal SAVE_TEMP_REGS 
+  	jal ISR_NVDLA
+  	jal RESTORE_TEMP_REGS
+  	ld ra, 120(sp)
+  	addi sp, sp, 128 #8*16
+  	mret
   
+SAVE_TEMP_REGS:
+	sd t0, 112(sp)
+  	sd t1, 104(sp)
+  	sd t2, 96(sp)
+  	sd t3, 88(sp)
+  	sd t4, 80(sp)
+  	sd t5, 72(sp)
+  	sd t6, 64(sp)
+  	sd a0, 56(sp) 
+  	sd a1, 48(sp) 
+  	sd a2, 40(sp) 
+  	sd a3, 32(sp) 
+  	sd a4, 24(sp) 
+  	sd a5, 16(sp) 
+  	sd a6, 8(sp) 
+  	sd a7, 0(sp) 
+	mret
 
+RESTORE_TEMP_REGS:
+	ld a7, 0(sp) 
+  	ld a6, 8(sp) 
+  	ld a5, 16(sp) 
+  	ld a4, 24(sp) 
+  	ld a3, 32(sp) 
+  	ld a2, 40(sp) 
+  	ld a1, 48(sp) 
+  	ld a0, 56(sp) 
+  	ld t6, 64(sp)
+  	ld t5, 72(sp)
+  	ld t4, 80(sp)
+  	ld t3, 88(sp)
+  	ld t2, 96(sp)
+  	ld t1, 104(sp)
+  	ld t0, 112(sp)
+  	mret
 

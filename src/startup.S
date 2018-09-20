@@ -28,11 +28,11 @@ reset_handler:
   #add a6, a6, a5
   li a2, 0
 data_init:
-  lw a3, 0(a5)
-  sw a3, 0(a4)
-  addi a4, a4, 4
-  addi a5, a5, 4
-  addi a2, a2, 4
+  ld a3, 0(a5)
+  sd a3, 0(a4)
+  addi a4, a4, 8
+  addi a5, a5, 8
+  addi a2, a2, 8
   bltu a2, a6, data_init
   #bleu a5, a6, data_init
 data_init_exit:
@@ -42,8 +42,8 @@ clear_bss:
   la a5, __BSS_END__
   li a6, 0
 bss_init:
-  sw a6, 0(a4)
-  addi a4, a4, 4
+  sd a6, 0(a4)
+  addi a4, a4, 8
   bleu a4, a5, bss_init
   
   jal main

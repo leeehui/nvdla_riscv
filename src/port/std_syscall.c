@@ -1,7 +1,7 @@
 #include <stdint.h>
 
 #define HEAP_SIZE (4*1024)
-static unsigned char heap[HEAP_SIZE] __attribute__((section("heap_lcc")));
+static unsigned char heap[HEAP_SIZE] __attribute__((section("heap_riscv")));
 
 /* override default _write function fo newlib */
 int _write(int file, char *ptr, int len)
