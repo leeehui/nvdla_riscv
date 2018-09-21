@@ -107,7 +107,7 @@ void dla_reg_write(void *driver_context, uint32_t addr, uint32_t reg)
 	if (!nvdla_dev)
 		return;
 
-    *(volatile uint32_t *)(uintptr_t)(addr) = reg;
+    *(volatile uint32_t *)(uintptr_t)(nvdla_dev->base + addr) = reg;
 }
 
 uint32_t dla_reg_read(void *driver_context, uint32_t addr)
@@ -119,7 +119,7 @@ uint32_t dla_reg_read(void *driver_context, uint32_t addr)
 	if (!nvdla_dev)
 		return 0;
 
-    val = *(volatile uint32_t *)(uintptr_t)(addr);
+    val = *(volatile uint32_t *)(uintptr_t)(nvdla_dev->base + addr);
 	return val;
 }
 
@@ -282,13 +282,13 @@ static int32_t nvdla_fill_task_desc(struct nvdla_submit_task *local_task, struct
 }
 
 
-int32_t nvdla_submit(struct nvdla_submit_task *local_task)
+int32_t nvdla_submit(struct nvdla_device *nvdla_dev,  struct nvdla_submit_task *local_task)
 {
 	int32_t err = 0;
 	struct nvdla_task *task;
     
 
-	struct nvdla_device *nvdla_dev ;//= dev_get_drvdata(drm->dev);
+    //= dev_get_drvdata(drm->dev);
 
 	task = malloc(sizeof(*task));
 	if (task == NULL)
@@ -312,4 +312,29 @@ free_task_desc:
 	free(task);
 	return err;
 }
+
+int32_t nvdla_init(struct nvdla_device *nvdla_dev)
+{
+    /* do following before calling nvdla_init */
+    //nvdla_dev = malloc(sizeof(*nvdla_device));
+    //if (task == NULL)
+    //    return -1;
+
+    /* TODO: make this configurable */
+    nvdla_dev->config_data = &nvdla_config_os_initial;
+
+    /* initialize io base */
+    nvdla_dev->base = (volatile void *)0x10000;
+
+    /* register irq function : do nothing */
+
+
+    dla_register_driver(&nvdla_dev->engine_context, (void *)nvdla_dev);
+    dla_clear_task(nvdla_dev->engine_context);
+
+    
+    return 0;
+
+}
+
 

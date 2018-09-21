@@ -32,76 +32,76 @@
 
 
 clear_bss:
-  la a4, __BSS_START__
-  la a5, __BSS_END__
-  li a6, 0
+	la a4, __BSS_START__
+  	la a5, __BSS_END__
+  	li a6, 0
 bss_init:
-  sw a6, 0(a4) 
-  addi a4, a4, 4
-  bleu a4, a5, bss_init
-  jr ra
+	sw a6, 0(a4) 
+  	addi a4, a4, 4
+  	bleu a4, a5, bss_init
+  	jr ra
 
 
 clear_gprs:
-   li s0, 0
-   li s1, 0
-   li s2, 0
-   li s3, 0
-   li s4, 0
-   li s5, 0
-   li s6, 0
-   li s7, 0
-   li s8, 0
-   li s9, 0
-   li s10, 0
-   li s11, 0
-   li a0, 0
-   li a1, 0
-   li a2, 0
-   li a3, 0
-   li a4, 0
-   li a5, 0
-   li a6, 0
-   li a7, 0
-   jr ra
+	li s0, 0
+   	li s1, 0
+   	li s2, 0
+   	li s3, 0
+	li s4, 0
+   	li s5, 0
+   	li s6, 0
+   	li s7, 0
+	li s8, 0
+   	li s9, 0
+   	li s10, 0
+   	li s11, 0
+	li a0, 0
+   	li a1, 0
+   	li a2, 0
+   	li a3, 0
+   	li a4, 0
+   	li a5, 0
+   	li a6, 0
+   	li a7, 0
+   	jr ra
 
 
 runtime_clear:
-  jal clear_bss
-  la sp, __STACKS_END__
-  jal clear_gprs
-  //disable interrupt
-  csrci mstatus, 0x08 //mie
-  jal main
+	jal clear_bss
+  	la sp, __STACKS_END__
+  	jal clear_gprs
+  	//disable interrupt
+  	csrci mstatus, 0x08 //mie
+  	jal main
 
 irq_enable:
-  csrsi mstatus, 0x08 //mie
-  ret
+	csrsi mstatus, 0x08 //mie
+  	ret
 
 irq_disable:
-  csrci mstatus, 0x08 //mie
-  ret
+	csrci mstatus, 0x08 //mie
+  	ret
 
    	
 ISR_WDT_ASM:
-  addi sp, sp, -128 #8*16
-  sd ra, 120(sp)
-  jal SAVE_TEMP_REGS
-  jal ISR_WDT
-  jal RESTORE_TEMP_REGS
-  ld ra, 120(sp)
-  addi sp, sp, 128 #8*16
-  mret
+	addi sp, sp, -128 #8*16
+  	sd ra, 120(sp)
+  	jal SAVE_TEMP_REGS
+  	jal ISR_WDT
+  	jal RESTORE_TEMP_REGS
+  	ld ra, 120(sp)
+  	addi sp, sp, 128 #8*16
+  	mret
 
 ISR_TIMER_ASM:
-  addi sp, sp, -128 #8*16
-  sd ra, 120(sp)
-  jal SAVE_TEMP_REGS
-  jal ISR_TIMER
-  jal RESTORE_TEMP_REGS
-  ld ra, 120(sp)
-  addi sp, sp, 128 #8*16
-  mret
+	addi sp, sp, -128 #8*16
+  	sd ra, 120(sp)
+  	jal SAVE_TEMP_REGS
+  	jal ISR_TIMER
+  	jal RESTORE_TEMP_REGS
+  	ld ra, 120(sp)
+  	addi sp, sp, 128 #8*16
+  	mret
   
 ISR_NVDLA_ASM:
 	addi sp, sp, -128 #8*16
@@ -111,7 +111,9 @@ ISR_NVDLA_ASM:
 	#so ra will be repalced when executing following instruction, 
 	#this is why we save ra first. 
 	jal SAVE_TEMP_REGS 
+
   	jal ISR_NVDLA
+
   	jal RESTORE_TEMP_REGS
   	ld ra, 120(sp)
   	addi sp, sp, 128 #8*16

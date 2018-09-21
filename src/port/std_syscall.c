@@ -3,7 +3,7 @@
 #define HEAP_SIZE (4*1024)
 static unsigned char heap[HEAP_SIZE] __attribute__((section("heap_riscv")));
 
-/* override default _write function fo newlib */
+/* override default write function for newlib */
 int _write(int file, char *ptr, int len)
 {
     int todo;
@@ -14,8 +14,8 @@ int _write(int file, char *ptr, int len)
     return len;
 }
 
-/* override default _write function fo newlib */
-void * _sbrk(intptr_t increment)
+/* override default sbrk function for newlib */
+void *_sbrk(intptr_t increment)
 {
     static int first=1;
     static void *curbrk; 

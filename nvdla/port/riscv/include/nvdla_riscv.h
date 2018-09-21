@@ -94,7 +94,7 @@ struct nvdla_config
 struct nvdla_device {
 	int32_t irq;
 	//struct kref ref;
-	//void __iomem *base;
+	void volatile *base;
 	//spinlock_t nvdla_lock;
 	//struct drm_device *drm;
 	struct nvdla_task *task;
