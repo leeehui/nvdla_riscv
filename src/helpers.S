@@ -86,7 +86,7 @@ irq_disable:
 ISR_WDT_ASM:
 	addi sp, sp, -128 #8*16
   	sd ra, 120(sp)
-  	jal SAVE_TEMP_REGS
+  	call SAVE_TEMP_REGS //just for test, in this case call is equivalent to jal as this is short jump
   	jal ISR_WDT
   	jal RESTORE_TEMP_REGS
   	ld ra, 120(sp)

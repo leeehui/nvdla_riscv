@@ -35,9 +35,17 @@
 #ifndef __LINUX_NVDLA_LINUX_H_
 #define __LINUX_NVDLA_LINUX_H_
 
+#include <stdint.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <string.h>
+#include <stdlib.h>
+
 
 struct nvdla_mem_handle {
     uint64_t paddr;
+    uint64_t offset;
 };
 
 struct nvdla_submit_task {
@@ -115,8 +123,11 @@ struct nvdla_device {
  * @return			0 on success and negative on error
  *
  */
-int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_task *task);
+//int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_task *task);
 
+int32_t nvdla_submit(struct nvdla_device *nvdla_dev,  struct nvdla_submit_task *local_task);
+int32_t nvdla_init(struct nvdla_device *nvdla_dev);
+void  nvdla_engine_isr(int32_t irq, void *data);
 /**
  * @brief			Get DMA address
  *

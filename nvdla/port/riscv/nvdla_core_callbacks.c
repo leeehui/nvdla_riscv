@@ -123,7 +123,7 @@ uint32_t dla_reg_read(void *driver_context, uint32_t addr)
 	return val;
 }
 
-static void  nvdla_engine_isr(int32_t irq, void *data)
+void  nvdla_engine_isr(int32_t irq, void *data)
 {
 	unsigned long flags;
 	struct nvdla_device *nvdla_dev = (struct nvdla_device *)data;
@@ -138,27 +138,30 @@ static void  nvdla_engine_isr(int32_t irq, void *data)
     return;
 }
 
+static void *get_smmu_vaddr(uint64_t paddr)
+{
+    /* currently bypass smmu */
+    return (void *)paddr;
+}
 
 static int32_t dla_read_dma_address(void *driver_context, void *task_data,
 						int16_t index, void *dst)
 {
 	int32_t ret = 0;
+    void *ptr = NULL;
 	struct nvdla_mem_handle *handles;
 	uint64_t *phys_addr = (uint64_t *)(dst);
-	struct nvdla_device *nvdla_dev =
-			(struct nvdla_device *)driver_context;
 	struct nvdla_task *task = (struct nvdla_task *)task_data;
 
 	if (index == -1 || index > task->num_addresses)
 		return -1;
 
-	//handles = (struct nvdla_mem_handle *)task->address_list;
-	//ret = nvdla_gem_dma_addr(nvdla_dev->drm, task->file,
-	//				handles[index].handle,
-	//				phys_addr);
+    handles = task->address_list;
 
-	/* Add offset to IOVA address */
-	//*phys_addr = *phys_addr + handles[index].offset;
+    ptr = get_smmu_vaddr(handles[index].paddr);
+
+    /* phys_addr is actually a vaddr that smmu recognizes, legacy name from nvdla kmd */
+    *phys_addr = (uint64_t)(ptr) + handles[index].offset;
 
 	return ret;
 }
@@ -204,11 +207,11 @@ int32_t dla_data_write(void *driver_context, void *task_data,
 	struct nvdla_mem_handle *handles;
 	struct nvdla_task *task = (struct nvdla_task *)task_data;
 
+    handles = task->address_list;
 
-    //TODO: get real addr
+    ptr = get_smmu_vaddr(handles[dst].paddr);
 
 	memcpy((void *)((uint8_t *)ptr + offset), src, size);
-
 
 	return ret;
 }
@@ -222,7 +225,9 @@ int32_t dla_data_read(void *driver_context, void *task_data,
 	struct nvdla_mem_handle *handles;
 	struct nvdla_task *task = (struct nvdla_task *)task_data;
 
-    //TODO: get real addr
+    handles = task->address_list;
+
+    ptr = get_smmu_vaddr(handles[src].paddr);
 
 	memcpy(dst, (void *)(((uint8_t *)ptr) + offset), size);
 
@@ -230,19 +235,17 @@ int32_t dla_data_read(void *driver_context, void *task_data,
 }
 
 
-int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_task *task)
+static int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_task *task)
 {
 	int32_t err = 0;
 	uint32_t task_complete = 0;
 
 	nvdla_dev->task = task;
 
-
 	err = dla_execute_task(nvdla_dev->engine_context, (void *)task, nvdla_dev->config_data);
 	if (err) {
 		return err;
 	}
-
 
 	while (1) {
 
@@ -271,10 +274,8 @@ static int32_t nvdla_fill_task_desc(struct nvdla_submit_task *local_task, struct
 	if (handles == NULL)
 		return -1;
 
-    //TODO :
-
-    //copy data
-
+    /* local_task points to data in dram, the actual data is list of nvdla_mem_handle */
+    memcpy(handles, (void *)local_task->base_address, local_task->num_addresses * sizeof(struct nvdla_mem_handle));
 
 	task->address_list = handles;
 
@@ -288,8 +289,6 @@ int32_t nvdla_submit(struct nvdla_device *nvdla_dev,  struct nvdla_submit_task *
 	struct nvdla_task *task;
     
 
-    //= dev_get_drvdata(drm->dev);
-
 	task = malloc(sizeof(*task));
 	if (task == NULL)
 		return -1;
@@ -297,7 +296,6 @@ int32_t nvdla_submit(struct nvdla_device *nvdla_dev,  struct nvdla_submit_task *
 	nvdla_dev->task = task;
 
 	task->nvdla_dev = nvdla_dev;
-	//task->file = file;
 
 	/* update task desc fields */
 	err = nvdla_fill_task_desc(local_task, task);
@@ -315,10 +313,6 @@ free_task_desc:
 
 int32_t nvdla_init(struct nvdla_device *nvdla_dev)
 {
-    /* do following before calling nvdla_init */
-    //nvdla_dev = malloc(sizeof(*nvdla_device));
-    //if (task == NULL)
-    //    return -1;
 
     /* TODO: make this configurable */
     nvdla_dev->config_data = &nvdla_config_os_initial;
@@ -328,13 +322,10 @@ int32_t nvdla_init(struct nvdla_device *nvdla_dev)
 
     /* register irq function : do nothing */
 
-
     dla_register_driver(&nvdla_dev->engine_context, (void *)nvdla_dev);
     dla_clear_task(nvdla_dev->engine_context);
 
-    
     return 0;
-
 }
 
 
