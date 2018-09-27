@@ -47,11 +47,8 @@ bss_init:
   bleu a4, a5, bss_init
   
   jal main
-  #li t3, 1
-  #li t4, 0
-  #sw t3,tohost,t4 
-2:
-  j 2b
+
+  j .
 
 clear_grps:
   li s0, 0

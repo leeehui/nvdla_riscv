@@ -42,8 +42,8 @@ include_directories(${NVDLA_DIR}/firmware/include)
 include_directories(${NVDLA_DIR}/include)
 include_directories(${NVDLA_DIR}/port/riscv/include)
 
-include_directories(../inc)
-include_directories(../inc/riscv)
+#include_directories(../inc)
+#include_directories(../inc/riscv)
 
 #include_directories(../src/lib)
 
