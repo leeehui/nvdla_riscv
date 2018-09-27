@@ -5,11 +5,17 @@
 #include <nvdla_interface.h>
 struct nvdla_device *nvdla_dev;
 
+void trap_handler(uintptr_t* regs, uintptr_t mcause, uintptr_t mepc)
+{
+    return;
+}
+
+
 int main(void)
 {
     struct nvdla_submit_task local_task;
     void *ptr;
-    printf("hello\n");
+    //printf("hello\n");
     ptr = malloc(20);
     free(ptr);
 
