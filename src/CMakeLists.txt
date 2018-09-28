@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
-#set(CMAKE_C_COMPILER    $RISCV/bin/riscv64-unknown-elf-gcc)
-#set(CMAKE_CXX_COMPILER  $RISCV/bin/riscv64-unknown-elf-gcc)
-set(CMAKE_C_COMPILER    /riscv-gnu-toolchain_c3ad555__newlib__rv64gc_lp64/bin/riscv64-unknown-elf-gcc)
-set(CMAKE_CXX_COMPILER  /riscv-gnu-toolchain_c3ad555__newlib__rv64gc_lp64/bin/riscv64-unknown-elf-g++)
+set(CMAKE_C_COMPILER    /usr/local/bin/riscv64-unknown-elf-gcc)
+set(CMAKE_CXX_COMPILER  /usr/local/bin/riscv64-unknown-elf-g++)
+#set(CMAKE_C_COMPILER    /riscv-gnu-toolchain_c3ad555__newlib__rv64gc_lp64/bin/riscv64-unknown-elf-gcc)
+#set(CMAKE_CXX_COMPILER  /riscv-gnu-toolchain_c3ad555__newlib__rv64gc_lp64/bin/riscv64-unknown-elf-g++)
 
 set(NVDLA_DIR ../nvdla)
 set(STARTUP_DIR ./env)
@@ -55,22 +55,25 @@ include_directories(${STARTUP_DIR}/common/rv64)
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
 #for compiler
-set(CMAKE_C_FLAGS "-march=rv64imc -mabi=lp64")
-set(CMAKE_ASM_FLAGS "-march=rv64imc -mabi=lp64")
-#set(CMAKE_C_FLAGS "-march=rv64im -mabi=lp64")
-#set(CMAKE_ASM_FLAGS "-march=rv64im -mabi=lp64")
+#set(CMAKE_C_FLAGS "-march=rv64imc -mabi=lp64")
+#set(CMAKE_ASM_FLAGS "-march=rv64imc -mabi=lp64")
+set(CMAKE_C_FLAGS "-march=rv64im -mabi=lp64")
+set(CMAKE_ASM_FLAGS "-march=rv64im -mabi=lp64")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-pic")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --specs=nano.specs")         #uncomment this for using nano stdlib
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -nostartfiles")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lgcc")
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fstack-protector-all")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,--relax")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,--gc-sections")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcmodel=medany")
+
+
+
+#set(CMAKE_C_FLAGS "${CMAKE_STATIC_FLAGS} -static")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lgcc")
 
 if(PLAT STREQUAL "nvdla")
     #list(APPEND SOURCE_FILES console/console.c)

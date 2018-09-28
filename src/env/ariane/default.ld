@@ -18,14 +18,14 @@ PHDRS
 SECTIONS
 {
   .text : {
-    . = ALIGN(128);
+    . = ALIGN(8);
     PROVIDE(_text_start = .);
     *(.text.init) *(.text .text.*)
     PROVIDE(_text_end = .);
   } >ram AT>ram :text
 
   .rodata : {
-    . = ALIGN(128);
+    . = ALIGN(8);
     PROVIDE(_rodata_start = .);
     *(.rodata .rodata.*)
     PROVIDE(_rodata_end = .);
@@ -39,12 +39,12 @@ SECTIONS
   } >ram AT>ram :data
 
   .heap : {
-    . = ALIGN(128);
+    . = ALIGN(8);
     *(heap_riscv);
   } >ram AT>ram :heap
 
   .bss :{
-    . = ALIGN(128);
+    . = ALIGN(8);
     PROVIDE(_bss_start = .);
     *(.sbss .sbss.*) *(.bss .bss.*)
     PROVIDE(_bss_end = .);
