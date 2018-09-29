@@ -47,10 +47,6 @@ include_directories(${STARTUP_DIR}/ariane)
 include_directories(${STARTUP_DIR}/common)
 include_directories(${STARTUP_DIR}/common/rv64)
 
-#include_directories(../inc)
-#include_directories(../inc/riscv)
-
-#include_directories(../src/lib)
 
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
@@ -71,10 +67,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,--gc-sections")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcmodel=medany")
 
 
-
-#set(CMAKE_C_FLAGS "${CMAKE_STATIC_FLAGS} -static")
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lgcc")
-
 if(PLAT STREQUAL "nvdla")
     #list(APPEND SOURCE_FILES console/console.c)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -T ${PROJECT_SOURCE_DIR}/env/ariane/default.ld")
@@ -91,6 +83,4 @@ message("EXECUTABLE_OUTPUT_PATH=${EXECUTABLE_OUTPUT_PATH}")
 
 if(PLAT STREQUAL "nvdla")
     add_executable(nvdla.elf ${SOURCE_FILES} ${NVDLA_SRC_FILES})
-else()
-    add_executable(spike.elf ${SOURCE_FILES})
 endif()
