@@ -60,7 +60,7 @@ int _isatty(int file)
     return 1;
 }
 
-int lseek(int file, int ptr, int dir)
+int _lseek(int file, int ptr, int dir)
 {
     return 0;
 }

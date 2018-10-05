@@ -27,7 +27,7 @@ int main(void)
 
     //while(1);
 
-#if 0
+#if 1
     nvdla_dev = malloc(sizeof(*nvdla_dev));
     if (nvdla_dev == NULL) {
         dla_debug("fail to allocate nvdla_device.\n");
