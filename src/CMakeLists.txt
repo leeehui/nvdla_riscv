@@ -16,10 +16,13 @@ enable_language(ASM)
 set(SOURCE_FILES
     ./main.c
     ./port/std_syscall.c
+    ./arch/riscv/device.c
+    ./drivers/htif.c
     #${STARTUP_DIR}/common/constants.S
     #${STARTUP_DIR}/common/crtm.S
     #${STARTUP_DIR}/common/rv64/macros.S
     ${STARTUP_DIR}/ariane/crt.S
+    ${STARTUP_DIR}/ariane/setup.c
     )
 set(NVDLA_SRC_FILES
     ${NVDLA_DIR}/firmware/scheduler.c
@@ -46,6 +49,8 @@ include_directories(${NVDLA_DIR}/port/riscv/include)
 include_directories(${STARTUP_DIR}/ariane)
 include_directories(${STARTUP_DIR}/common)
 include_directories(${STARTUP_DIR}/common/rv64)
+include_directories(./include)
+include_directories(./include/arch/riscv)
 
 
 

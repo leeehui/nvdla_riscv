@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <nvdla_riscv.h>
 #include <nvdla_interface.h>
+
+#include "femto.h"
+
 struct nvdla_device *nvdla_dev;
 
 void trap_handler(uintptr_t* regs, uintptr_t mcause, uintptr_t mepc)
@@ -15,10 +18,16 @@ int main(void)
 {
     struct nvdla_submit_task local_task;
     void *ptr;
-    //printf("hello\n");
+    arch_setup();
+    //console_dev->putchar('a');
+    printf("hello\n");
     ptr = malloc(20);
+    printf("ptr: %p\n", ptr);
     free(ptr);
 
+    //while(1);
+
+#if 0
     nvdla_dev = malloc(sizeof(*nvdla_dev));
     if (nvdla_dev == NULL) {
         dla_debug("fail to allocate nvdla_device.\n");
@@ -37,6 +46,7 @@ int main(void)
     }
 
     free(nvdla_dev);
+#endif
 
-    return 0;
+    //exit(0);
 }

@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include <device.h>
+#include <sys/stat.h>
 
 #define HEAP_SIZE (1*1024)
 static unsigned char heap[HEAP_SIZE] __attribute__((section("heap_riscv")));
@@ -9,7 +11,8 @@ int _write(int file, char *ptr, int len)
     int todo;
     for (todo=0; todo<len; todo++) {
         /* TODO: replace with real redirection function here */
-        *(volatile uint8_t *)(0x000050) = 0xaa;
+        //*(volatile uint8_t *)(0x000050) = 0xaa;
+        console_dev->putchar(*ptr++);
     }
     return len;
 }
@@ -40,6 +43,32 @@ void *_sbrk(intptr_t increment)
     curbrk = (void *)((intptr_t)curbrk + increment);
 
     return oldbrk;
+}
+
+int _open(const char *name, int flags, int mode)
+{
+    return -1;
+}
+
+int _close(int file)
+{
+    return -1;
+}
+
+int _isatty(int file)
+{
+    return 1;
+}
+
+int lseek(int file, int ptr, int dir)
+{
+    return 0;
+}
+
+int _fstat(int file, struct stat *st)
+{
+    st->st_mode = S_IFCHR;
+    return 0;
 }
 
 
