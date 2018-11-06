@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.5)
-set(CMAKE_C_COMPILER    /usr/local/bin/riscv64-unknown-elf-gcc)
-set(CMAKE_CXX_COMPILER  /usr/local/bin/riscv64-unknown-elf-g++)
+set(CMAKE_C_COMPILER    /usr/local/riscv/bin/riscv64-unknown-elf-gcc)
+set(CMAKE_CXX_COMPILER  /usr/local/riscv/bin/riscv64-unknown-elf-g++)
 #set(CMAKE_C_COMPILER    /riscv-gnu-toolchain_c3ad555__newlib__rv64gc_lp64/bin/riscv64-unknown-elf-gcc)
 #set(CMAKE_CXX_COMPILER  /riscv-gnu-toolchain_c3ad555__newlib__rv64gc_lp64/bin/riscv64-unknown-elf-g++)
 
 set(NVDLA_DIR ../nvdla)
 set(STARTUP_DIR ./env)
+set(TEST_DIR ./test)
 
 project(nvdla)
 set(CMAKE_CXX_STANDARD 11)
@@ -17,12 +18,16 @@ set(SOURCE_FILES
     ./main.c
     ./port/std_syscall.c
     ./arch/riscv/device.c
+    ./arch/riscv/csr.c
+    ./arch/riscv/csr_mmio.c
     ./drivers/htif.c
     #${STARTUP_DIR}/common/constants.S
     #${STARTUP_DIR}/common/crtm.S
     #${STARTUP_DIR}/common/rv64/macros.S
     ${STARTUP_DIR}/ariane/crt.S
     ${STARTUP_DIR}/ariane/setup.c
+
+    ${TEST_DIR}/csr_test.c
     )
 set(NVDLA_SRC_FILES
     ${NVDLA_DIR}/firmware/scheduler.c

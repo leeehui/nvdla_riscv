@@ -13,6 +13,7 @@ void trap_handler(uintptr_t* regs, uintptr_t mcause, uintptr_t mepc)
     return;
 }
 
+extern void csr_read_write(void);
 
 int main(void)
 {
@@ -25,9 +26,11 @@ int main(void)
     printf("ptr: %p\n", ptr);
     free(ptr);
 
-    //while(1);
+    csr_read_write();
 
-#if 1
+    while(1);
+
+#if 0
     nvdla_dev = malloc(sizeof(*nvdla_dev));
     if (nvdla_dev == NULL) {
         dla_debug("fail to allocate nvdla_device.\n");

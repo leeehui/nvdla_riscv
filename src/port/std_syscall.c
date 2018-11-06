@@ -2,7 +2,7 @@
 #include <device.h>
 #include <sys/stat.h>
 
-#define HEAP_SIZE (1*1024)
+#define HEAP_SIZE (4*1024)
 static unsigned char heap[HEAP_SIZE] __attribute__((section("heap_riscv")));
 
 /* override default write function for newlib */
