@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
-set(CMAKE_C_COMPILER    /usr/local/riscv/bin/riscv64-unknown-elf-gcc)
-set(CMAKE_CXX_COMPILER  /usr/local/riscv/bin/riscv64-unknown-elf-g++)
+set(CMAKE_C_COMPILER    riscv64-unknown-elf-gcc)
+set(CMAKE_CXX_COMPILER  riscv64-unknown-elf-g++)
 #set(CMAKE_C_COMPILER    /riscv-gnu-toolchain_c3ad555__newlib__rv64gc_lp64/bin/riscv64-unknown-elf-gcc)
 #set(CMAKE_CXX_COMPILER  /riscv-gnu-toolchain_c3ad555__newlib__rv64gc_lp64/bin/riscv64-unknown-elf-g++)
 
@@ -28,6 +28,7 @@ set(SOURCE_FILES
     ${STARTUP_DIR}/ariane/setup.c
 
     ${TEST_DIR}/csr_test.c
+    ${TEST_DIR}/test.c
     )
 set(NVDLA_SRC_FILES
     ${NVDLA_DIR}/firmware/scheduler.c
@@ -56,6 +57,7 @@ include_directories(${STARTUP_DIR}/common)
 include_directories(${STARTUP_DIR}/common/rv64)
 include_directories(./include)
 include_directories(./include/arch/riscv)
+include_directories(${TEST_DIR})
 
 
 

@@ -6,6 +6,8 @@
 
 #include "femto.h"
 
+#include "test.h"
+
 struct nvdla_device *nvdla_dev;
 
 void trap_handler(uintptr_t* regs, uintptr_t mcause, uintptr_t mepc)
@@ -13,20 +15,19 @@ void trap_handler(uintptr_t* regs, uintptr_t mcause, uintptr_t mepc)
     return;
 }
 
-extern void csr_read_write(void);
 
 int main(void)
 {
     struct nvdla_submit_task local_task;
     void *ptr;
-    arch_setup();
-    //console_dev->putchar('a');
-    printf("hello\n");
-    ptr = malloc(20);
-    printf("ptr: %p\n", ptr);
-    free(ptr);
+    //arch_setup();
 
-    csr_read_write();
+    //printf("hello\n");
+    //ptr = malloc(20);
+    //printf("ptr: %p\n", ptr);
+    //free(ptr);
+
+    test();
 
     while(1);
 
