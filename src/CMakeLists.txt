@@ -81,8 +81,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcmodel=medany")
 
 if(PLAT STREQUAL "nvdla")
     #list(APPEND SOURCE_FILES console/console.c)
-    #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -T ${PROJECT_SOURCE_DIR}/env/ariane/default.ld")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -T ${PROJECT_SOURCE_DIR}/env/ariane/default_qemu.ld")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -T ${PROJECT_SOURCE_DIR}/env/ariane/default.ld")
+    #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -T ${PROJECT_SOURCE_DIR}/env/ariane/default_qemu.ld")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,-Map,${EXECUTABLE_OUTPUT_PATH}/nvdla.map")
 endif()
 
