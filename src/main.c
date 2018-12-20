@@ -20,15 +20,16 @@ int main(void)
 {
     struct nvdla_submit_task local_task;
     void *ptr;
-    //arch_setup();
+    arch_setup();
 
-    //printf("hello\n");
-    //ptr = malloc(20);
-    //printf("ptr: %p\n", ptr);
-    //free(ptr);
+    printf("hello, lihui\n");
+    ptr = malloc(20);
+    printf("ptr: %p\n", ptr);
+    free(ptr);
 
-    test();
+    //test();
 
+    *(volatile uint32_t*)(uintptr_t)(0xFFA881FFF0) = 0xaa;
     while(1);
 
 #if 0

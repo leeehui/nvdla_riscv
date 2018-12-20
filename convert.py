@@ -19,7 +19,7 @@ def main():
 
     counter = 0
     flag = False
-    file_name = output_dir + "/block_"
+    file_name = output_dir + "/gpsram_blk_"
     file_counter = 0
     file_len = 2048 * 8
 
@@ -78,15 +78,16 @@ def main():
 
     # convert binary to hex string
     while file_counter != 0:
+
+        # read generated file according to file_counter
         file_counter = file_counter - 1
         new_file_name = file_name + str(file_counter)
-
         with open(new_file_name, "rb") as f:
             block_data = f.read()
             f.close()
 
         byte_counter = 0
-        new_file = open(new_file_name + "_str","w")
+        new_file = open(new_file_name + ".hex","w")
         while byte_counter < len(block_data):
             # 8bytes per line
             data = block_data[byte_counter: byte_counter+8]

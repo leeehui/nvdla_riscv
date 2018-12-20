@@ -11,8 +11,8 @@ int _write(int file, char *ptr, int len)
     int todo;
     for (todo=0; todo<len; todo++) {
         /* TODO: replace with real redirection function here */
-        //*(volatile uint8_t *)(0x000050) = 0xaa;
-        console_dev->putchar(*ptr++);
+        *(volatile uint8_t *)(0xFFA881FFFF) = *ptr++;
+        //console_dev->putchar(*ptr++);
     }
     return len;
 }
