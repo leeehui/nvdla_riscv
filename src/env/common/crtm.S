@@ -33,7 +33,7 @@ park:
     wfi
     j       park
 
-    .align 2
+    .align 4 
 trap_vector:
     # Save registers.
     addi    sp, sp, -CONTEXT_SIZE
@@ -55,9 +55,9 @@ trap_vector:
     sxsp    t6, 15
 
     # Invoke the handler.
-    mv      a0, sp
-    csrr    a1, mcause
-    csrr    a2, mepc
+    # mv      a0, sp
+    # csrr    a1, mcause
+    # csrr    a2, mepc
     jal     trap_handler
 
     # Restore registers.

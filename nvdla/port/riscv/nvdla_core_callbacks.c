@@ -36,7 +36,9 @@
 
 #include <nvdla_interface.h>
 #include <nvdla_riscv.h>
+#include "femto.h"
 
+static volatile uint32_t dla_irq_flag = 0;
 
 static struct nvdla_config nvdla_config_os_initial = {
 	.atom_size = 32,
@@ -134,6 +136,12 @@ void  nvdla_engine_isr(int32_t irq, void *data)
 	dla_isr_handler(nvdla_dev->engine_context);
 
     //TODO: notify main function
+    if (dla_irq_flag) {
+        // Fatal error, interrupt intervals too small, software has no time to clear dla_irq_flag
+        // maybe FIFO event list is the solution
+        return;
+    }
+    dla_irq_flag = 1;
 
     return;
 }
@@ -236,7 +244,16 @@ static int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_ta
 
 	while (1) {
 
-        //TODO: wait for interrupt
+        //TODO: wait for interrupt, probably WFI instruction
+        // do NOT enter/exit critical section as only one atomic op need to perform
+        while (!atomic_read(&dla_irq_flag)) {
+            wfi(); 
+        }
+
+        // if another continous interrupt occurs here, we can do nothing
+
+        atomic_set(&dla_irq_flag, 0);
+        
 
 		err = dla_process_events(nvdla_dev->engine_context, &task_complete);
 

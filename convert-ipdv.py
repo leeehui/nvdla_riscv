@@ -13,7 +13,6 @@ def main():
     input_file = args.i
     output_dir = args.o
 
-
     counter = 0
 
     # read file to bytearray

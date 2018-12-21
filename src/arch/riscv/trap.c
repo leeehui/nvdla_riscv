@@ -4,8 +4,17 @@
 #include "arch/riscv/trap.h"
 #include "arch/riscv/encoding.h"
 #include "arch/riscv/machine.h"
+#include "arch/riscv/csr.h"
+#include "arch/riscv/csr_mmio.h"
 
 static trap_fn tfn = 0;
+static void irq0_handler(void);
+static void irq1_handler(void);
+static void timer_handler(void);
+static void ipi_handler(void);
+
+extern void* get_nvdla_dev(void);
+extern void  nvdla_engine_isr(int32_t irq, void *data);
 
 const char * riscv_excp_names[16] = {
     "misaligned_fetch",
@@ -55,11 +64,53 @@ void set_trap_fn(trap_fn fn)
     tfn = fn;
 }
 
-void trap_handler(uintptr_t* regs, uintptr_t mcause, uintptr_t mepc)
+void trap_handler(void)
 {
-    if (tfn) {
-        tfn(regs, mcause, mepc);
-    } else {
-        die("machine mode: unhandlable trap %d @ %p", mcause, mepc);
+    int64_t mcause;
+    uint64_t mip;
+    mcause = (int32_t)read_csr(0x342);
+
+    // interrupt
+    if (mcause < 0)
+    {
+        mip = read_csr(0x344);
+        if (mip & IRQ0_MASK)
+        {
+            irq0_handler();
+        }
+        else if (mip & IRQ1_MASK)
+        {
+            irq1_handler();
+        }
+        else if (mip & IPI_MASK)
+        {
+            ipi_handler();
+        }
+        else if (mip & TIME_MASK)
+        {
+            timer_handler();
+        }
     }
+    // synchronous exception
+    else
+    {
+
+    }
+}
+
+static void irq0_handler(void)
+{
+    nvdla_engine_isr(0, get_nvdla_dev());
+}
+
+static void irq1_handler(void)
+{
+}
+
+static void timer_handler(void)
+{
+}
+
+static void ipi_handler(void)
+{
 }

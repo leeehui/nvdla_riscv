@@ -4,9 +4,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-/* SUPERVISOR MODE CSRS */
+#endif /* SUPERVISOR MODE CSRS */
 #define    CSR_SSTATUS             0x100
 #define    CSR_SIE                 0x104
 #define    CSR_STVEC               0x105

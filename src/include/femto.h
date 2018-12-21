@@ -12,3 +12,4 @@
 #include "auxval.h"
 #include "device.h"
 #include "machine.h"
+#include "atomic.h"

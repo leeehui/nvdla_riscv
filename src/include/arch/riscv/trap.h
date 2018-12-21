@@ -6,6 +6,11 @@
 extern "C" {
 #endif
 
+#define IRQ0_MASK       (1<<9)
+#define IRQ1_MASK       (1<<11)
+#define IPI_MASK            (1<<3)
+#define TIME_MASK           (1<<7)
+
 typedef void (*trap_fn)(uintptr_t* regs, uintptr_t mcause, uintptr_t mepc);
 trap_fn get_trap_fn();
 void set_trap_fn(trap_fn fn);

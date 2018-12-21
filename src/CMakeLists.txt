@@ -20,6 +20,7 @@ set(SOURCE_FILES
     ./arch/riscv/device.c
     ./arch/riscv/csr.c
     ./arch/riscv/csr_mmio.c
+    ./arch/riscv/trap.c
     ./drivers/htif.c
     #${STARTUP_DIR}/common/constants.S
     #${STARTUP_DIR}/common/crtm.S
