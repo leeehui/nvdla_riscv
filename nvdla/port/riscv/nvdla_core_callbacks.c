@@ -139,6 +139,8 @@ void  nvdla_engine_isr(int32_t irq, void *data)
     if (dla_irq_flag) {
         // Fatal error, interrupt intervals too small, software has no time to clear dla_irq_flag
         // maybe FIFO event list is the solution
+        // Update: currently it is theoretically impossible to be here as we have disabled irq0 before dla_irq_flag is cleared
+        //          so, the only reason for being here is wrongly set dla_irq_flag somewhere else
         return;
     }
     dla_irq_flag = 1;
@@ -230,6 +232,9 @@ int32_t dla_data_read(void *driver_context, void *task_data,
 }
 
 
+extern void disable_irq0(void);
+extern void enable_irq0(void);
+
 static int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_task *task)
 {
 	int32_t err = 0;
@@ -245,15 +250,19 @@ static int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_ta
 	while (1) {
 
         //TODO: wait for interrupt, probably WFI instruction
-        // do NOT enter/exit critical section as only one atomic op need to perform
-        while (!atomic_read(&dla_irq_flag)) {
+        while (1) {
+            //disable interrupt
+            disable_irq0();
+            if (atomic_read(&dla_irq_flag)) {
+                atomic_set(&dla_irq_flag, 0);
+                // enable interrupt
+                enable_irq0();
+                break;
+            }
+            //enable interrupt before wfi
+            enable_irq0();
             wfi(); 
         }
-
-        // if another continous interrupt occurs here, we can do nothing
-
-        atomic_set(&dla_irq_flag, 0);
-        
 
 		err = dla_process_events(nvdla_dev->engine_context, &task_complete);
 

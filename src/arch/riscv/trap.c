@@ -64,6 +64,30 @@ void set_trap_fn(trap_fn fn)
     tfn = fn;
 }
 
+void disable_interrupt(uint64_t mask)
+{
+    uint64_t mie = read_csr_enum(csr_mie);
+    mie = mie & (~mask);
+    write_csr_enum(csr_mie, mie);  
+}
+
+void enable_interrupt(uint64_t mask)
+{
+    uint64_t mie = read_csr_enum(csr_mie);
+    mie = mie | (mask);
+    write_csr_enum(csr_mie, mie);  
+}
+
+void disable_irq0(void)
+{
+    disable_interrupt(IRQ0_MASK);
+}
+
+void enable_irq0(void)
+{
+    enable_interrupt(IRQ0_MASK);
+}
+
 void trap_handler(void)
 {
     int64_t mcause;
