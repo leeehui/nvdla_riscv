@@ -21,6 +21,15 @@ _start:
     la      sp, stacks + STACK_SIZE
     add     sp, sp, t0
 
+	# init bss data, as simulation environment requires
+	la		a4, _bss_start
+	la		a5, _bss_end
+	li		a6, 0
+bss_init:
+	sw		a6, 0(a4)
+	addi    a4, a4, 4
+	bleu	a4, a5, bss_init
+
     # park all harts excpet hart 0
     csrr    a0, mhartid
     bnez    a0, park
@@ -33,7 +42,7 @@ park:
     wfi
     j       park
 
-    .align 4 
+    .align 4
 trap_vector:
     # Save registers.
     addi    sp, sp, -CONTEXT_SIZE
@@ -55,9 +64,9 @@ trap_vector:
     sxsp    t6, 15
 
     # Invoke the handler.
-    # mv      a0, sp
-    # csrr    a1, mcause
-    # csrr    a2, mepc
+    mv      a0, sp
+    csrr    a1, mcause
+    csrr    a2, mepc
     jal     trap_handler
 
     # Restore registers.

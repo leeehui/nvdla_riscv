@@ -251,7 +251,7 @@ static int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_ta
 
         //TODO: wait for interrupt, probably WFI instruction
         while (1) {
-            //disable interrupt
+            //disable interrupt, this is because interrupt may occur between atomic_read and atomic_set
             disable_irq0();
             if (atomic_read(&dla_irq_flag)) {
                 atomic_set(&dla_irq_flag, 0);

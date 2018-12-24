@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <device.h>
 #include <sys/stat.h>
+#include "femto.h"
 
 #define HEAP_SIZE (4*1024)
 static unsigned char heap[HEAP_SIZE] __attribute__((section("heap_riscv")));
@@ -12,6 +13,7 @@ int _write(int file, char *ptr, int len)
     for (todo=0; todo<len; todo++) {
         /* TODO: replace with real redirection function here */
         *(volatile uint8_t *)(0xFFA881FFFF) = *ptr++;
+        mb();
         //console_dev->putchar(*ptr++);
     }
     return len;

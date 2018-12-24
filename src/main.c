@@ -27,20 +27,21 @@ void* get_local_task(void)
 int main(void)
 {
     void *ptr;
-    //arch_setup();
+    arch_setup();
 
-    //printf("hello, lihui\n");
-    //ptr = malloc(20);
-    //printf("ptr: %p\n", ptr);
-    //free(ptr);
+    printf("hello, lihui\n");
+    ptr = malloc(20);
+    printf("ptr: %p\n", ptr);
+    free(ptr);
 
     test();
 
     *(volatile uint32_t*)(uintptr_t)(0xFFA881FFF0) = 0xaa;
+    mb();
 
-    //while(1);
+    while(1);
 
-#if 1
+#if 0
 
     nvdla_init(get_nvdla_dev());
 

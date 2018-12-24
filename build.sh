@@ -12,3 +12,8 @@ mkdir output
 python ../convert.py -i nvdla.bin
 python ../convert-ipdv.py -i nvdla.bin
 
+cd output
+dir=$(date +'%Y%m%d')
+mkdir $dir
+
+cp gpsram_blk_*.hex $dir

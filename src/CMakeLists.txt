@@ -29,6 +29,7 @@ set(SOURCE_FILES
     ${STARTUP_DIR}/ariane/setup.c
 
     ${TEST_DIR}/csr_test.c
+    ${TEST_DIR}/dla_test.c
     ${TEST_DIR}/test.c
     )
 set(NVDLA_SRC_FILES

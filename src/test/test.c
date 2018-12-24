@@ -1,9 +1,9 @@
 
 #include "csr_test.h"
+#include "dla_test.h"
 
 
 void test(void)
 {
-    riscv_csr_read_write();
-    ariane_csr_read_write();
+    dla_reg_read_write();
 }
