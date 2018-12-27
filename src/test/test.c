@@ -5,5 +5,6 @@
 
 void test(void)
 {
-    dla_reg_read_write();
+    //dla_reg_read_write();
+    dla_bdma_test();
 }

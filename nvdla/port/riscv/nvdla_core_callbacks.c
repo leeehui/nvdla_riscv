@@ -37,8 +37,9 @@
 #include <nvdla_interface.h>
 #include <nvdla_riscv.h>
 #include "femto.h"
+#include "csr_mmio.h"
 
-static volatile uint32_t dla_irq_flag = 0;
+uint32_t dla_irq_flag = 0;
 
 static struct nvdla_config nvdla_config_os_initial = {
 	.atom_size = 32,
@@ -135,15 +136,7 @@ void  nvdla_engine_isr(int32_t irq, void *data)
 
 	dla_isr_handler(nvdla_dev->engine_context);
 
-    //TODO: notify main function
-    if (dla_irq_flag) {
-        // Fatal error, interrupt intervals too small, software has no time to clear dla_irq_flag
-        // maybe FIFO event list is the solution
-        // Update: currently it is theoretically impossible to be here as we have disabled irq0 before dla_irq_flag is cleared
-        //          so, the only reason for being here is wrongly set dla_irq_flag somewhere else
-        return;
-    }
-    dla_irq_flag = 1;
+    notify_dla_irq(&dla_irq_flag);
 
     return;
 }
@@ -232,8 +225,8 @@ int32_t dla_data_read(void *driver_context, void *task_data,
 }
 
 
-extern void disable_irq0(void);
-extern void enable_irq0(void);
+//extern void disable_irq0(void);
+//extern void enable_irq0(void);
 
 static int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_task *task)
 {
@@ -250,19 +243,7 @@ static int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_ta
 	while (1) {
 
         //TODO: wait for interrupt, probably WFI instruction
-        while (1) {
-            //disable interrupt, this is because interrupt may occur between atomic_read and atomic_set
-            disable_irq0();
-            if (atomic_read(&dla_irq_flag)) {
-                atomic_set(&dla_irq_flag, 0);
-                // enable interrupt
-                enable_irq0();
-                break;
-            }
-            //enable interrupt before wfi
-            enable_irq0();
-            wfi(); 
-        }
+        wait_for_dla_irq(&dla_irq_flag);
 
 		err = dla_process_events(nvdla_dev->engine_context, &task_complete);
 
@@ -331,7 +312,7 @@ int32_t nvdla_init(struct nvdla_device *nvdla_dev)
     nvdla_dev->config_data = &nvdla_config_os_initial;
 
     /* initialize io base */
-    nvdla_dev->base = (volatile void *)0x10000;
+    nvdla_dev->base = (volatile void *)(RISCV_DLA_SS_BASE);
 
     /* register irq function : do nothing */
 

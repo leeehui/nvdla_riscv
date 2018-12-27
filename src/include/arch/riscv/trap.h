@@ -6,6 +6,10 @@
 extern "C" {
 #endif
 
+#define MIE             (1<<3)
+#define SIE             (1<<1)
+#define UIE             (1<<0)
+
 #define IRQ0_MASK       (1<<9)
 #define IRQ1_MASK       (1<<11)
 #define IPI_MASK            (1<<3)
@@ -14,11 +18,15 @@ extern "C" {
 typedef void (*trap_fn)(uintptr_t* regs, uintptr_t mcause, uintptr_t mepc);
 trap_fn get_trap_fn();
 void set_trap_fn(trap_fn fn);
+void disable_irq_global(uint64_t mask);
+void enable_irq_global(uint64_t mask);
+void disable_irq(uint64_t mask);
+void enable_irq(uint64_t mask);
+void disable_irq0(void);
+void enable_irq0(void);
 
 const char * riscv_excp_names[16];
-const char * riscv_intr_names[16];
-
-enum {
+const char * riscv_intr_names[16]; enum {
   cause_misaligned_fetch     = 0,
   cause_fault_fetch          = 1,
   cause_illegal_instruction  = 2,

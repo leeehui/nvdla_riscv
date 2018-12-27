@@ -7,6 +7,8 @@
 #include "arch/riscv/csr.h"
 #include "arch/riscv/csr_mmio.h"
 
+#define TRAP 1
+
 static trap_fn tfn = 0;
 static void irq0_handler(void);
 static void irq1_handler(void);
@@ -64,40 +66,57 @@ void set_trap_fn(trap_fn fn)
     tfn = fn;
 }
 
-void disable_interrupt(uint64_t mask)
+void disable_irq_global(uint64_t mask)
+{
+    uint64_t mstatus = read_csr_enum(csr_mstatus);
+    mstatus = mstatus & (~mask);
+    write_csr_enum(csr_mstatus, mstatus);  
+}
+
+void enable_irq_global(uint64_t mask)
+{
+    uint64_t mstatus = read_csr_enum(csr_mstatus);
+    mstatus = mstatus | (mask);
+    write_csr_enum(csr_mstatus, mstatus);  
+}
+
+
+void disable_irq(uint64_t mask)
 {
     uint64_t mie = read_csr_enum(csr_mie);
     mie = mie & (~mask);
     write_csr_enum(csr_mie, mie);  
 }
 
-void enable_interrupt(uint64_t mask)
+void enable_irq(uint64_t mask)
 {
     uint64_t mie = read_csr_enum(csr_mie);
     mie = mie | (mask);
     write_csr_enum(csr_mie, mie);  
 }
 
+static void clear_irq_pend(uint64_t mask)
+{
+    uint64_t mip = read_csr_enum(csr_mip);
+    mip = mip & (~mask);
+    write_csr_enum(csr_mip, mip);  
+}
+
 void disable_irq0(void)
 {
-    disable_interrupt(IRQ0_MASK);
+    disable_irq(IRQ0_MASK);
 }
 
 void enable_irq0(void)
 {
-    enable_interrupt(IRQ0_MASK);
+    enable_irq(IRQ0_MASK);
 }
 
-void trap_handler(void)
+void trap_handler(int64_t mcause, uint64_t mip)
 {
-    int64_t mcause;
-    uint64_t mip;
-    mcause = (int32_t)read_csr(0x342);
-
     // interrupt
     if (mcause < 0)
     {
-        mip = read_csr(0x344);
         if (mip & IRQ0_MASK)
         {
             irq0_handler();
@@ -118,23 +137,42 @@ void trap_handler(void)
     // synchronous exception
     else
     {
-
+        debug(TRAP, "synchronous exception.");
     }
 }
 
+extern uint32_t task_notifier;
 static void irq0_handler(void)
 {
-    nvdla_engine_isr(0, get_nvdla_dev());
+    debug(TRAP, "irq0_handler.");
+    if (riscv_csr_read(ARIANE_CSR_DLA_TASK_CONF))
+    {
+        debug(TRAP, "new task.");
+        notify_dla_irq(&task_notifier);
+        riscv_csr_write(ARIANE_CSR_DLA_TASK_CONF, 0);
+    }
+    else
+    {
+        debug(TRAP, "dla intr.");
+        nvdla_engine_isr(0, get_nvdla_dev());
+    }
+    //clear_irq_pend(IRQ0_MASK);
 }
 
 static void irq1_handler(void)
 {
+    //clear_irq_pend(IRQ1_MASK);
+    debug(TRAP, "irq1_handler.");
 }
 
 static void timer_handler(void)
 {
+    //clear_irq_pend(TIME_MASK);
+    debug(TRAP, "timer_handler.");
 }
 
 static void ipi_handler(void)
 {
+    //clear_irq_pend(IPI_MASK);
+    debug(TRAP, "ipi_handler.");
 }

@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include "stdint.h"
+#include "femto.h"
 
 
 void riscv_csr_read_write(void);

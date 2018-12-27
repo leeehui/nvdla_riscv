@@ -5,10 +5,7 @@
 #include <nvdla_interface.h>
 
 #include "femto.h"
-
 #include "test.h"
-#include "csr_mmio.h"
-#include "csr.h"
 
 static struct nvdla_device nvdla_dev;
 static struct nvdla_submit_task local_task;
@@ -22,22 +19,33 @@ void* get_local_task(void)
     return &local_task;
 }
 
-
+uint32_t task_notifier = 0;
 
 int main(void)
 {
     void *ptr;
     arch_setup();
+    enable_irq_global(MIE);
+    enable_irq(IPI_MASK);
+    enable_irq(IRQ0_MASK);
+    enable_irq(IRQ1_MASK);
+    enable_irq(TIME_MASK);
+    disable_dla_irq_to_ap();
 
-    printf("hello, lihui\n");
+    printf("hello, riscv!\n");
     ptr = malloc(20);
     printf("ptr: %p\n", ptr);
     free(ptr);
 
-    test();
+    //test();
 
     *(volatile uint32_t*)(uintptr_t)(0xFFA881FFF0) = 0xaa;
     mb();
+
+    //wait_for_dla_irq(&task_notifier);
+
+    //*(volatile uint32_t*)(uintptr_t)(0xFFA881FFF0) = 0x55;
+    //mb();
 
     while(1);
 

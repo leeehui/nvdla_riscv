@@ -5,9 +5,10 @@
 extern "C" {
 #endif
 
-#include "stdint.h"
+#include "femto.h"
 
 void dla_reg_read_write(void);
+void dla_bdma_test(void);
 
 #ifdef __cplusplus
 }

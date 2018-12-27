@@ -15,12 +15,6 @@ _start:
     la      t0, trap_vector
     csrw    mtvec, t0
 
-    # set up stack pointer based on hartid
-    csrr    t0, mhartid
-    slli    t0, t0, STACK_SHIFT
-    la      sp, stacks + STACK_SIZE
-    add     sp, sp, t0
-
 	# init bss data, as simulation environment requires
 	la		a4, _bss_start
 	la		a5, _bss_end
@@ -29,6 +23,12 @@ bss_init:
 	sw		a6, 0(a4)
 	addi    a4, a4, 4
 	bleu	a4, a5, bss_init
+
+    # set up stack pointer based on hartid
+    csrr    t0, mhartid
+    slli    t0, t0, STACK_SHIFT
+    la      sp, stacks + STACK_SIZE
+    add     sp, sp, t0
 
     # park all harts excpet hart 0
     csrr    a0, mhartid
@@ -64,9 +64,9 @@ trap_vector:
     sxsp    t6, 15
 
     # Invoke the handler.
-    mv      a0, sp
-    csrr    a1, mcause
-    csrr    a2, mepc
+    # mv      a0, sp
+    csrr    a0, mcause
+    csrr    a1, mip
     jal     trap_handler
 
     # Restore registers.
