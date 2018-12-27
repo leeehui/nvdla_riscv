@@ -36,7 +36,10 @@
 
 #include <nvdla_interface.h>
 #include <nvdla_riscv.h>
+#include "femto.h"
+#include "csr_mmio.h"
 
+uint32_t dla_irq_flag = 0;
 
 static struct nvdla_config nvdla_config_os_initial = {
 	.atom_size = 32,
@@ -133,22 +136,16 @@ void  nvdla_engine_isr(int32_t irq, void *data)
 
 	dla_isr_handler(nvdla_dev->engine_context);
 
-    //TODO: notify main function
+    notify_dla_irq(&dla_irq_flag);
 
     return;
 }
 
-static void *get_smmu_vaddr(uint64_t paddr)
-{
-    /* currently bypass smmu */
-    return (void *)paddr;
-}
 
 static int32_t dla_read_dma_address(void *driver_context, void *task_data,
 						int16_t index, void *dst)
 {
 	int32_t ret = 0;
-    void *ptr = NULL;
 	struct nvdla_mem_handle *handles;
 	uint64_t *phys_addr = (uint64_t *)(dst);
 	struct nvdla_task *task = (struct nvdla_task *)task_data;
@@ -158,10 +155,8 @@ static int32_t dla_read_dma_address(void *driver_context, void *task_data,
 
     handles = task->address_list;
 
-    ptr = get_smmu_vaddr(handles[index].paddr);
-
     /* phys_addr is actually a vaddr that smmu recognizes, legacy name from nvdla kmd */
-    *phys_addr = (uint64_t)(ptr) + handles[index].offset;
+    *phys_addr = handles[index].paddr + handles[index].offset;
 
 	return ret;
 }
@@ -203,15 +198,13 @@ int32_t dla_data_write(void *driver_context, void *task_data,
 				uint32_t size, uint64_t offset)
 {
 	int32_t ret;
-	void *ptr = NULL;
 	struct nvdla_mem_handle *handles;
 	struct nvdla_task *task = (struct nvdla_task *)task_data;
 
     handles = task->address_list;
 
-    ptr = get_smmu_vaddr(handles[dst].paddr);
 
-	memcpy((void *)((uint8_t *)ptr + offset), src, size);
+	memcpy((void *)(handles[dst].paddr + offset), src, size);
 
 	return ret;
 }
@@ -221,19 +214,19 @@ int32_t dla_data_read(void *driver_context, void *task_data,
 				uint32_t size, uint64_t offset)
 {
 	int32_t ret;
-	void *ptr = NULL;
 	struct nvdla_mem_handle *handles;
 	struct nvdla_task *task = (struct nvdla_task *)task_data;
 
     handles = task->address_list;
 
-    ptr = get_smmu_vaddr(handles[src].paddr);
-
-	memcpy(dst, (void *)(((uint8_t *)ptr) + offset), size);
+	memcpy(dst, (void *)(handles[src].paddr + offset), size);
 
 	return ret;
 }
 
+
+//extern void disable_irq0(void);
+//extern void enable_irq0(void);
 
 static int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_task *task)
 {
@@ -249,7 +242,8 @@ static int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_ta
 
 	while (1) {
 
-        //TODO: wait for interrupt
+        //TODO: wait for interrupt, probably WFI instruction
+        wait_for_dla_irq(&dla_irq_flag);
 
 		err = dla_process_events(nvdla_dev->engine_context, &task_complete);
 
@@ -318,7 +312,7 @@ int32_t nvdla_init(struct nvdla_device *nvdla_dev)
     nvdla_dev->config_data = &nvdla_config_os_initial;
 
     /* initialize io base */
-    nvdla_dev->base = (volatile void *)0x10000;
+    nvdla_dev->base = (volatile void *)(RISCV_DLA_SS_BASE);
 
     /* register irq function : do nothing */
 

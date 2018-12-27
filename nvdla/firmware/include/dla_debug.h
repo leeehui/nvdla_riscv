@@ -28,6 +28,7 @@
 
 #ifndef __FIRMWARE_DLA_DEBUG_H_
 #define __FIRMWARE_DLA_DEBUG_H_
+#include <assert.h>
 
 #define STRINGIFY(s) #s
 #define DEFER_STRINGIFY(s) STRINGIFY(s)
@@ -69,7 +70,7 @@
 #define pr_dump_stack(format, ...)
 #define dla_trace(format, ...) dla_debug("Trace:" format "\n", ## __VA_ARGS__)
 
-#define assert(condition)
+//#define assert(condition)
 
 #define RETURN(err) { return (err); }
 
