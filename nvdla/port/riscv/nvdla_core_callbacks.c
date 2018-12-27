@@ -37,9 +37,38 @@
 #include <nvdla_interface.h>
 #include <nvdla_riscv.h>
 #include "femto.h"
-#include "csr_mmio.h"
 
 uint32_t dla_irq_flag = 0;
+
+uint32_t task_notifier = 0;
+static void irq0_handler(void)
+{
+    debug(TRAP, "irq0_handler.");
+    if (riscv_csr_read(ARIANE_CSR_DLA_TASK_CONF))
+    {
+        debug(TRAP, "new task.");
+        notify_dla_irq(&task_notifier);
+        riscv_csr_write(ARIANE_CSR_DLA_TASK_CONF, 0);
+    }
+    else
+    {
+        debug(TRAP, "dla intr.");
+        nvdla_engine_isr(0, get_nvdla_dev());
+    }
+}
+
+
+static struct nvdla_device nvdla_dev;
+static struct nvdla_submit_task local_task;
+
+void* get_nvdla_dev(void)
+{
+    return &nvdla_dev;
+}
+void* get_local_task(void)
+{
+    return &local_task;
+}
 
 static struct nvdla_config nvdla_config_os_initial = {
 	.atom_size = 32,
@@ -110,7 +139,9 @@ void dla_reg_write(void *driver_context, uint32_t addr, uint32_t reg)
 	if (!nvdla_dev)
 		return;
 
+    mb();
     *(volatile uint32_t *)(uintptr_t)(nvdla_dev->base + addr) = reg;
+    mb();
 }
 
 uint32_t dla_reg_read(void *driver_context, uint32_t addr)
@@ -122,7 +153,9 @@ uint32_t dla_reg_read(void *driver_context, uint32_t addr)
 	if (!nvdla_dev)
 		return 0;
 
+    mb();
     val = *(volatile uint32_t *)(uintptr_t)(nvdla_dev->base + addr);
+    mb();
 	return val;
 }
 
@@ -225,9 +258,6 @@ int32_t dla_data_read(void *driver_context, void *task_data,
 }
 
 
-//extern void disable_irq0(void);
-//extern void enable_irq0(void);
-
 static int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_task *task)
 {
 	int32_t err = 0;
@@ -314,7 +344,8 @@ int32_t nvdla_init(struct nvdla_device *nvdla_dev)
     /* initialize io base */
     nvdla_dev->base = (volatile void *)(RISCV_DLA_SS_BASE);
 
-    /* register irq function : do nothing */
+    /* register irq function */
+    register_irq_handler(IRQ_ID_IRQ0, irq0_handler);
 
     dla_register_driver(&nvdla_dev->engine_context, (void *)nvdla_dev);
     dla_clear_task(nvdla_dev->engine_context);
