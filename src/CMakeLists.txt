@@ -49,15 +49,6 @@ set(NVDLA_SRC_FILES
     ${NVDLA_DIR}/port/riscv/nvdla_core_callbacks.c
     )
 
-set(IPDV_SIM_SRC_FILES
-    #${TEST_DIR}/ipdv_sim/dla_reg_test.c
-    ${TEST_DIR}/ipdv_sim/dla_bdma_test.c
-    )
-
-set(RISCV_SIM_SRC_FILES
-    ${TEST_DIR}/riscv_sim/irq_test.c
-    #${TEST_DIR}/riscv_sim/csr_test.c
-    )
 
 set(RISC_RUNTIME_SRC_FILES
     ./riscv_runtime.c
@@ -105,11 +96,15 @@ if(PLAT STREQUAL "riscv_runtime")
     add_executable(nvdla.elf ${SOURCE_FILES} ${NVDLA_SRC_FILES} ${RISC_RUNTIME_SRC_FILES})
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,-Map,${EXECUTABLE_OUTPUT_PATH}/nvdla.map")
 
-elseif(PLAT STREQUAL "riscv_sim")
-    add_executable(nvdla.elf ${SOURCE_FILES} ${NVDLA_SRC_FILES} ${RISCV_SIM_SRC_FILES})
-
-elseif(PLAT STREQUAL "ipdv_sim")
-    add_executable(nvdla.elf ${SOURCE_FILES} ${NVDLA_SRC_FILES} ${IPDV_SIM_SRC_FILES})
+else()
+    string(CONCAT bin_file "${PLAT}/${BIN_NAME}" ".c")
+    find_file(IPDV_SIM_SRC_FILE NAMES ${bin_file} PATHS ${TEST_DIR} NO_DEFAULT_PATH)
+    if (IPDV_SIM_SRC_FILE)
+        message("file : ${IPDV_SIM_SRC_FILE}")
+        add_executable(nvdla.elf ${SOURCE_FILES} ${NVDLA_SRC_FILES} ${IPDV_SIM_SRC_FILE})
+    else ()
+        message("cannot find file.")
+    endif()
 
 endif()
 
