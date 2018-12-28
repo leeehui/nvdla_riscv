@@ -1,6 +1,5 @@
 
-#include "csr_test.h"
-
+#include "femto.h"
 
 
 void riscv_csr_read_write(void)
@@ -16,3 +15,8 @@ void ariane_csr_read_write(void)
     read_csr_enum(csr_mtvec);
 }
 
+void riscv_runtime(void)
+{
+    riscv_csr_read_write();
+    ariane_csr_read_write();
+}

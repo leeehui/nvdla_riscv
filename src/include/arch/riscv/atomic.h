@@ -6,7 +6,6 @@
 extern "C" {
 #endif
 
-#define ATOMIC 1
 #include "debug.h"
 #include "trap.h"
 

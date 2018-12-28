@@ -9,6 +9,7 @@ extern "C" {
 #include <stdint.h>
 #include <stddef.h>
 #include <encoding.h>
+#include <assert.h>
 
 void arch_setup();
 void exit(int status) __attribute__((noreturn));
@@ -16,7 +17,7 @@ void exit(int status) __attribute__((noreturn));
 #define die(str, ...) ({ \
   printf("%s:%d: " str "\n", __FILE__, __LINE__, ##__VA_ARGS__); exit(-1); })
 
-#define assert(x) ({ if (!(x)) die("assertion failed: %s", #x); })
+//#define assert(x) ({ if (!(x)) die("assertion failed: %s", #x); })
 
 #define read_const_csr(reg) ({ unsigned long __tmp; \
   asm ("csrr %0, " #reg : "=r"(__tmp)); __tmp; })

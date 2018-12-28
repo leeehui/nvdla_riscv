@@ -7,9 +7,18 @@
 #include "arch/riscv/csr.h"
 #include "arch/riscv/csr_mmio.h"
 
-#define TRAP 1
 
 static trap_fn tfn = 0;
+
+static irq_handler_t trap_handlers[IRQ_NUM] = {0};
+static uint32_t irq_masks[IRQ_NUM] = {
+    IRQ_MASK_IRQ0,
+    IRQ_MASK_IRQ1,
+    IRQ_MASK_IPI,
+    IRQ_MASK_TIME
+};
+
+
 static void irq0_handler(void);
 static void irq1_handler(void);
 static void timer_handler(void);
@@ -34,9 +43,7 @@ const char * riscv_excp_names[16] = {
     "exec_page_fault",
     "load_page_fault",
     "reserved",
-    "store_page_fault"
-};
-
+    "store_page_fault" }; 
 const char * riscv_intr_names[16] = {
     "u_software",
     "s_software",
@@ -66,6 +73,26 @@ void set_trap_fn(trap_fn fn)
     tfn = fn;
 }
 
+irq_handler_t get_irq_handler(uint32_t id)
+{
+    if (id < IRQ_NUM)
+    {
+        return trap_handlers[id];
+    }
+    else
+    {
+        return (irq_handler_t)(0);
+    }
+}
+
+void register_irq_handler(uint32_t id, irq_handler_t fn)
+{
+    if (id < IRQ_NUM)
+    {
+        trap_handlers[id] = fn;
+    }
+}
+
 void disable_irq_global(uint64_t mask)
 {
     uint64_t mstatus = read_csr_enum(csr_mstatus);
@@ -81,98 +108,69 @@ void enable_irq_global(uint64_t mask)
 }
 
 
-void disable_irq(uint64_t mask)
+void disable_irq(uint32_t id)
 {
-    uint64_t mie = read_csr_enum(csr_mie);
-    mie = mie & (~mask);
-    write_csr_enum(csr_mie, mie);  
+    if (id < IRQ_NUM)
+    {
+        uint64_t mie = read_csr_enum(csr_mie);
+        mie = mie & (~irq_masks[id]);
+        write_csr_enum(csr_mie, mie);  
+    }
 }
 
-void enable_irq(uint64_t mask)
+void enable_irq(uint32_t id)
 {
-    uint64_t mie = read_csr_enum(csr_mie);
-    mie = mie | (mask);
-    write_csr_enum(csr_mie, mie);  
-}
-
-static void clear_irq_pend(uint64_t mask)
-{
-    uint64_t mip = read_csr_enum(csr_mip);
-    mip = mip & (~mask);
-    write_csr_enum(csr_mip, mip);  
+    if (id < IRQ_NUM)
+    {
+        uint64_t mie = read_csr_enum(csr_mie);
+        mie = mie | (irq_masks[id]);
+        write_csr_enum(csr_mie, mie);  
+    }
 }
 
 void disable_irq0(void)
 {
-    disable_irq(IRQ0_MASK);
+    disable_irq(IRQ_ID_IRQ0);
 }
 
 void enable_irq0(void)
 {
-    enable_irq(IRQ0_MASK);
+    enable_irq(IRQ_ID_IRQ0);
 }
 
 void trap_handler(int64_t mcause, uint64_t mip)
 {
+    irq_id_t id = IRQ_NUM;
+    irq_handler_t irq;
+
     // interrupt
     if (mcause < 0)
     {
-        if (mip & IRQ0_MASK)
+        if (mip & IRQ_MASK_IRQ0)
         {
-            irq0_handler();
+            id = IRQ_ID_IRQ0;
         }
-        else if (mip & IRQ1_MASK)
+        else if (mip & IRQ_MASK_IRQ1)
         {
-            irq1_handler();
+            id = IRQ_ID_IRQ1;
         }
-        else if (mip & IPI_MASK)
+        else if (mip & IRQ_MASK_IPI)
         {
-            ipi_handler();
+            id = IRQ_ID_IPI;
         }
-        else if (mip & TIME_MASK)
+        else if (mip & IRQ_MASK_TIME)
         {
-            timer_handler();
+            id = IRQ_ID_TIME;
         }
+
+        if (irq = get_irq_handler(id))
+            irq();
     }
     // synchronous exception
     else
     {
         debug(TRAP, "synchronous exception.");
     }
+
 }
 
-extern uint32_t task_notifier;
-static void irq0_handler(void)
-{
-    debug(TRAP, "irq0_handler.");
-    if (riscv_csr_read(ARIANE_CSR_DLA_TASK_CONF))
-    {
-        debug(TRAP, "new task.");
-        notify_dla_irq(&task_notifier);
-        riscv_csr_write(ARIANE_CSR_DLA_TASK_CONF, 0);
-    }
-    else
-    {
-        debug(TRAP, "dla intr.");
-        nvdla_engine_isr(0, get_nvdla_dev());
-    }
-    //clear_irq_pend(IRQ0_MASK);
-}
-
-static void irq1_handler(void)
-{
-    //clear_irq_pend(IRQ1_MASK);
-    debug(TRAP, "irq1_handler.");
-}
-
-static void timer_handler(void)
-{
-    //clear_irq_pend(TIME_MASK);
-    debug(TRAP, "timer_handler.");
-}
-
-static void ipi_handler(void)
-{
-    //clear_irq_pend(IPI_MASK);
-    debug(TRAP, "ipi_handler.");
-}

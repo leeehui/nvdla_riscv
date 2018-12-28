@@ -128,6 +128,8 @@ struct nvdla_device {
 int32_t nvdla_submit(struct nvdla_device *nvdla_dev,  struct nvdla_submit_task *local_task);
 int32_t nvdla_init(struct nvdla_device *nvdla_dev);
 void  nvdla_engine_isr(int32_t irq, void *data);
+void* get_nvdla_dev(void);
+void* get_local_task(void);
 /**
  * @brief			Get DMA address
  *

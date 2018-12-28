@@ -10,23 +10,39 @@ extern "C" {
 #define SIE             (1<<1)
 #define UIE             (1<<0)
 
-#define IRQ0_MASK       (1<<9)
-#define IRQ1_MASK       (1<<11)
-#define IPI_MASK            (1<<3)
-#define TIME_MASK           (1<<7)
+#define IRQ_MASK_IRQ0       (1<<9)
+#define IRQ_MASK_IRQ1       (1<<11)
+#define IRQ_MASK_IPI            (1<<3)
+#define IRQ_MASK_TIME           (1<<7)
+
+
+typedef enum 
+{
+    IRQ_ID_IRQ0 = 0,
+    IRQ_ID_IRQ1,
+    IRQ_ID_IPI,
+    IRQ_ID_TIME,
+
+    IRQ_NUM
+}irq_id_t;
 
 typedef void (*trap_fn)(uintptr_t* regs, uintptr_t mcause, uintptr_t mepc);
+
+typedef void (*irq_handler_t)(void);
+
 trap_fn get_trap_fn();
 void set_trap_fn(trap_fn fn);
 void disable_irq_global(uint64_t mask);
 void enable_irq_global(uint64_t mask);
-void disable_irq(uint64_t mask);
-void enable_irq(uint64_t mask);
+void disable_irq(uint32_t id);
+void enable_irq(uint32_t id);
 void disable_irq0(void);
 void enable_irq0(void);
+void register_irq_handler(uint32_t id, irq_handler_t fn);
 
 const char * riscv_excp_names[16];
-const char * riscv_intr_names[16]; enum {
+const char * riscv_intr_names[16];
+enum {
   cause_misaligned_fetch     = 0,
   cause_fault_fetch          = 1,
   cause_illegal_instruction  = 2,

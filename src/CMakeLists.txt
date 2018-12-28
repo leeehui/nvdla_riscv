@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 set(CMAKE_C_COMPILER    riscv64-unknown-elf-gcc)
 set(CMAKE_CXX_COMPILER  riscv64-unknown-elf-g++)
-#set(CMAKE_C_COMPILER    /riscv-gnu-toolchain_c3ad555__newlib__rv64gc_lp64/bin/riscv64-unknown-elf-gcc)
-#set(CMAKE_CXX_COMPILER  /riscv-gnu-toolchain_c3ad555__newlib__rv64gc_lp64/bin/riscv64-unknown-elf-g++)
+
+add_definitions(-DMAIN=1) #-DMAIN=0 to remove log
+add_definitions(-DATOMIC=1)
+add_definitions(-DTRAP=1)
 
 set(NVDLA_DIR ../nvdla)
 set(STARTUP_DIR ./env)
@@ -27,11 +29,9 @@ set(SOURCE_FILES
     #${STARTUP_DIR}/common/rv64/macros.S
     ${STARTUP_DIR}/ariane/crt.S
     ${STARTUP_DIR}/ariane/setup.c
-
-    ${TEST_DIR}/csr_test.c
-    ${TEST_DIR}/dla_test.c
-    ${TEST_DIR}/test.c
+    ${TEST_DIR}/test_util.c
     )
+
 set(NVDLA_SRC_FILES
     ${NVDLA_DIR}/firmware/scheduler.c
     ${NVDLA_DIR}/firmware/engine.c
@@ -46,9 +46,23 @@ set(NVDLA_SRC_FILES
     ${NVDLA_DIR}/firmware/engine_data.c
     ${NVDLA_DIR}/firmware/engine_isr.c
     ${NVDLA_DIR}/firmware/engine_debug.c
-
     ${NVDLA_DIR}/port/riscv/nvdla_core_callbacks.c
     )
+
+set(IPDV_SIM_SRC_FILES
+    #${TEST_DIR}/ipdv_sim/dla_reg_test.c
+    ${TEST_DIR}/ipdv_sim/dla_bdma_test.c
+    )
+
+set(RISCV_SIM_SRC_FILES
+    ${TEST_DIR}/riscv_sim/irq_test.c
+    #${TEST_DIR}/riscv_sim/csr_test.c
+    )
+
+set(RISC_RUNTIME_SRC_FILES
+    ./riscv_runtime.c
+    )
+
 
 include_directories(${NVDLA_DIR}/firmware)
 include_directories(${NVDLA_DIR}/firmware/include)
@@ -60,19 +74,21 @@ include_directories(${STARTUP_DIR}/common/rv64)
 include_directories(./include)
 include_directories(./include/arch/riscv)
 include_directories(${TEST_DIR})
+include_directories(${TEST_DIR}/riscv_sim)
+include_directories(${TEST_DIR}/ipdv_sim)
 
 
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
 #for compiler
-#set(CMAKE_C_FLAGS "-march=rv64imc -mabi=lp64")
+#set(CMAKE_C_FLAGS "-march=rv64imc -mabi=lp64")               #for compress compile
 #set(CMAKE_ASM_FLAGS "-march=rv64imc -mabi=lp64")
 set(CMAKE_C_FLAGS "-march=rv64im -mabi=lp64")
 set(CMAKE_ASM_FLAGS "-march=rv64im -mabi=lp64")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-pic")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --specs=nano.specs")         #uncomment this for using nano stdlib
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --specs=nano.specs")      #uncomment this for using nano stdlib
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -nostartfiles")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fstack-protector-all")
@@ -81,21 +97,19 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,--gc-sections")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcmodel=medany")
 
 
-if(PLAT STREQUAL "nvdla")
-    #list(APPEND SOURCE_FILES console/console.c)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -T ${PROJECT_SOURCE_DIR}/env/ariane/default.ld")
-    #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -T ${PROJECT_SOURCE_DIR}/env/ariane/default_qemu.ld")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,-Map,${EXECUTABLE_OUTPUT_PATH}/nvdla.map")
-endif()
-
-#for linker
 message("PLAT: " ${PLAT})
-message("C_FLAGS: " ${CMAKE_C_FLAGS})
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -T ${PROJECT_SOURCE_DIR}/env/ariane/default.ld")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -T ${PROJECT_SOURCE_DIR}/env/ariane/default_qemu.ld")
 
-message("PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}")
-message("PROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}")
-message("EXECUTABLE_OUTPUT_PATH=${EXECUTABLE_OUTPUT_PATH}")
+if(PLAT STREQUAL "riscv_runtime")
+    add_executable(nvdla.elf ${SOURCE_FILES} ${NVDLA_SRC_FILES} ${RISC_RUNTIME_SRC_FILES})
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,-Map,${EXECUTABLE_OUTPUT_PATH}/nvdla.map")
 
-if(PLAT STREQUAL "nvdla")
-    add_executable(nvdla.elf ${SOURCE_FILES} ${NVDLA_SRC_FILES})
+elseif(PLAT STREQUAL "riscv_sim")
+    add_executable(nvdla.elf ${SOURCE_FILES} ${NVDLA_SRC_FILES} ${RISCV_SIM_SRC_FILES})
+
+elseif(PLAT STREQUAL "ipdv_sim")
+    add_executable(nvdla.elf ${SOURCE_FILES} ${NVDLA_SRC_FILES} ${IPDV_SIM_SRC_FILES})
+
 endif()
+
