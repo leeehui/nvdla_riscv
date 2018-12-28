@@ -5,6 +5,8 @@ set(CMAKE_CXX_COMPILER  riscv64-unknown-elf-g++)
 add_definitions(-DMAIN=1) #-DMAIN=0 to remove log
 add_definitions(-DATOMIC=1)
 add_definitions(-DTRAP=1)
+add_definitions(-DIRQ0=1)
+add_definitions(-DDLA_REG_TEST=1)
 
 set(NVDLA_DIR ../nvdla)
 set(STARTUP_DIR ./env)
@@ -65,8 +67,6 @@ include_directories(${STARTUP_DIR}/common/rv64)
 include_directories(./include)
 include_directories(./include/arch/riscv)
 include_directories(${TEST_DIR})
-include_directories(${TEST_DIR}/riscv_sim)
-include_directories(${TEST_DIR}/ipdv_sim)
 
 
 
