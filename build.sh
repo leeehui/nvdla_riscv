@@ -22,6 +22,5 @@ cp gpsram_blk_*.hex $dir
 cp nvdla.bin.dat  "${dir_ipdv}/nvdla.${2}.dat"
 cp ../nvdla.dump "${dir_ipdv}/nvdla.${2}.dump"
 cp ../nvdla.elf  "${dir_ipdv}/nvdla.${2}.elf"
-cp ../nvdla.map  "${dir_ipdv}/nvdla.${2}.map"
 cp $dir /mnt/share -r
 cp $dir_ipdv /mnt/share -r

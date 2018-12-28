@@ -43,16 +43,16 @@ uint32_t dla_irq_flag = 0;
 uint32_t task_notifier = 0;
 static void irq0_handler(void)
 {
-    debug(TRAP, "irq0_handler.");
+    debug(IRQ0, "irq0_handler.");
     if (riscv_csr_read(ARIANE_CSR_DLA_TASK_CONF))
     {
-        debug(TRAP, "new task.");
+        debug(IRQ0, "new task.");
         notify_dla_irq(&task_notifier);
         riscv_csr_write(ARIANE_CSR_DLA_TASK_CONF, 0);
     }
     else
     {
-        debug(TRAP, "dla intr.");
+        debug(IRQ0, "dla intr.");
         nvdla_engine_isr(0, get_nvdla_dev());
     }
 }

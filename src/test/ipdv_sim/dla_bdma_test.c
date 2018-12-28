@@ -1,5 +1,6 @@
 
 #include "dla_engine_internal.h"
+#include <nvdla_riscv.h>
 #include "test_util.h"
 
 

@@ -1,64 +1,61 @@
 
 #include "dla_engine_internal.h"
+#include <nvdla_riscv.h>
 #include "test_util.h"
 
+typedef struct {
+    uint32_t reg_start;
+    uint32_t reg_end;
+}dla_reg_t;
 
-void dla_reg_test(void)
+
+dla_reg_t regs[] = 
 {
-    dla_reg_write(0x00000, 0x5a5a5a5a);
-    dla_reg_write(0x00004, 0x5a5a5a5a);
-    dla_reg_write(0x00008, 0x5a5a5a5a);
-    dla_reg_write(0x0000c, 0x5a5a5a5a);
-    dla_reg_write(0x01000, 0x5a5a5a5a);
-    dla_reg_write(0x01004, 0x5a5a5a5a);
-    dla_reg_write(0x01008, 0x5a5a5a5a);
-    dla_reg_write(0x0100c, 0x5a5a5a5a);
-    dla_reg_write(0x01014, 0x5a5a5a5a);
-    dla_reg_write(0x01018, 0x5a5a5a5a);
-    dla_reg_write(0x0101c, 0x5a5a5a5a);
-    dla_reg_write(0x02000, 0x5a5a5a5a);
-    dla_reg_write(0x03000, 0x5a5a5a5a);
-    dla_reg_write(0x04000, 0x5a5a5a5a);
-    dla_reg_write(0x05000, 0x5a5a5a5a);
-    dla_reg_write(0x06000, 0x5a5a5a5a);
-    dla_reg_write(0x07000, 0x5a5a5a5a);
-    dla_reg_write(0x08000, 0x5a5a5a5a);
-    dla_reg_write(0x09000, 0x5a5a5a5a);
-    dla_reg_write(0x0a000, 0x5a5a5a5a);
-    dla_reg_write(0x0b000, 0x5a5a5a5a);
-    dla_reg_write(0x0c000, 0x5a5a5a5a);
-    dla_reg_write(0x0d000, 0x5a5a5a5a);
-    dla_reg_write(0x0e000, 0x5a5a5a5a);
-    dla_reg_write(0x0f000, 0x5a5a5a5a);
+    {   MCIF0_FIRST_REG, MCIF0_LAST_REG      },
+    {   CVIF0_FIRST_REG, CVIF0_LAST_REG      },
+    {   BDMA0_FIRST_REG, BDMA0_LAST_REG      },
+    {   CDMA0_FIRST_REG, CDMA0_LAST_REG      },
+    {   CSC0_FIRST_REG,  CSC0_LAST_REG       },
+    {   CMAC_A0_FIRST_REG,  CMAC_A0_LAST_REG    },
+    {   CMAC_B0_FIRST_REG,  CMAC_B0_LAST_REG    },
+    {   CACC0_FIRST_REG,  CACC0_LAST_REG      },
+    {   SDP_RDMA0_FIRST_REG,  SDP_RDMA0_LAST_REG  },
+    {   SDP0_FIRST_REG,  SDP0_LAST_REG       },
+    {   PDP_RDMA0_FIRST_REG,  PDP_RDMA0_LAST_REG  },
+    {   PDP0_FIRST_REG,  PDP0_LAST_REG       },
+    {   CDP_RDMA0_FIRST_REG,  CDP_RDMA0_LAST_REG  },
+    {   CDP0_FIRST_REG,  CDP0_LAST_REG       },
+    {   RBK0_FIRST_REG,  RBK0_LAST_REG      },
+    {   0   }
+};
 
-    dla_reg_read(0x00000);
-    dla_reg_read(0x00004);
-    dla_reg_read(0x00008);
-    dla_reg_read(0x0000c);
-    dla_reg_read(0x01000);
-    dla_reg_read(0x01004);
-    dla_reg_read(0x01008);
-    dla_reg_read(0x0100c);
-    dla_reg_read(0x01014);
-    dla_reg_read(0x01018);
-    dla_reg_read(0x0101c);
-    dla_reg_read(0x02000);
-    dla_reg_read(0x03000);
-    dla_reg_read(0x04000);
-    dla_reg_read(0x05000);
-    dla_reg_read(0x06000);
-    dla_reg_read(0x07000);
-    dla_reg_read(0x08000);
-    dla_reg_read(0x09000);
-    dla_reg_read(0x0a000);
-    dla_reg_read(0x0b000);
-    dla_reg_read(0x0c000);
-    dla_reg_read(0x0d000);
-    dla_reg_read(0x0e000);
-    dla_reg_read(0x0f000);
+void dla_reg_group_test(dla_reg_t *dla_reg)
+{
+    for (uint32_t reg = dla_reg->reg_start; reg <= dla_reg->reg_end; reg = reg + 4)
+    {
+        dla_reg_write(get_nvdla_dev(), reg, 0x5a5a5a5a);
+        dla_reg_read(get_nvdla_dev(), reg);
+    }
+}
+
+void dla_reg_test(dla_reg_t *dla_regs)
+{
+    while(dla_regs && dla_regs->reg_start != 0)
+    {
+        
+        dla_reg_group_test(dla_regs);
+        dla_regs++;
+    }
 }
 
 void riscv_runtime(void)
 {
-    dla_reg_test();
-}
+
+    // as we just want to read write regs of dla, 
+    // so disable all interrupts in case dla interrupt occurs unexpectedly
+    disable_irq_global(MIE);
+
+    dla_reg_test(&regs[0]);
+
+    signal_to_simulation(0xaa);
+}                       

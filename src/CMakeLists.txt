@@ -5,6 +5,7 @@ set(CMAKE_CXX_COMPILER  riscv64-unknown-elf-g++)
 add_definitions(-DMAIN=1) #-DMAIN=0 to remove log
 add_definitions(-DATOMIC=1)
 add_definitions(-DTRAP=1)
+add_definitions(-DIRQ0=1)
 
 set(NVDLA_DIR ../nvdla)
 set(STARTUP_DIR ./env)
@@ -50,8 +51,8 @@ set(NVDLA_SRC_FILES
     )
 
 set(IPDV_SIM_SRC_FILES
-    #${TEST_DIR}/ipdv_sim/dla_reg_test.c
-    ${TEST_DIR}/ipdv_sim/dla_bdma_test.c
+    ${TEST_DIR}/ipdv_sim/dla_reg_test.c
+    #${TEST_DIR}/ipdv_sim/dla_bdma_test.c
     )
 
 set(RISCV_SIM_SRC_FILES
@@ -74,8 +75,6 @@ include_directories(${STARTUP_DIR}/common/rv64)
 include_directories(./include)
 include_directories(./include/arch/riscv)
 include_directories(${TEST_DIR})
-include_directories(${TEST_DIR}/riscv_sim)
-include_directories(${TEST_DIR}/ipdv_sim)
 
 
 
