@@ -29,6 +29,7 @@ set(SOURCE_FILES
     #${STARTUP_DIR}/common/rv64/macros.S
     ${STARTUP_DIR}/ariane/crt.S
     ${STARTUP_DIR}/ariane/setup.c
+    ${TEST_DIR}/test_util.c
     )
 
 set(NVDLA_SRC_FILES
@@ -49,13 +50,13 @@ set(NVDLA_SRC_FILES
     )
 
 set(IPDV_SIM_SRC_FILES
-    ${TEST_DIR}/ipdv_sim/dla_test_util.c
     #${TEST_DIR}/ipdv_sim/dla_reg_test.c
     ${TEST_DIR}/ipdv_sim/dla_bdma_test.c
     )
 
 set(RISCV_SIM_SRC_FILES
-    ${TEST_DIR}/riscv_sim/csr_test.c
+    ${TEST_DIR}/riscv_sim/irq_test.c
+    #${TEST_DIR}/riscv_sim/csr_test.c
     )
 
 set(RISC_RUNTIME_SRC_FILES
@@ -104,7 +105,7 @@ if(PLAT STREQUAL "riscv_runtime")
     add_executable(nvdla.elf ${SOURCE_FILES} ${NVDLA_SRC_FILES} ${RISC_RUNTIME_SRC_FILES})
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,-Map,${EXECUTABLE_OUTPUT_PATH}/nvdla.map")
 
-elseif(PLAT STREQUAL "rsicv_sim")
+elseif(PLAT STREQUAL "riscv_sim")
     add_executable(nvdla.elf ${SOURCE_FILES} ${NVDLA_SRC_FILES} ${RISCV_SIM_SRC_FILES})
 
 elseif(PLAT STREQUAL "ipdv_sim")

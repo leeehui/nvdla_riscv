@@ -11,6 +11,8 @@ extern void riscv_runtime(void);
 int main(void)
 {
     arch_setup();
+    debug(MAIN, "hello, riscv!");
+
     nvdla_init(get_nvdla_dev());
 
     enable_irq_global(MIE);
@@ -19,9 +21,6 @@ int main(void)
     enable_irq(IRQ_ID_IRQ1);
     enable_irq(IRQ_ID_TIME);
     disable_dla_irq_to_ap();
-
-
-    debug(MAIN, "hello, riscv!");
 
     riscv_runtime();
 

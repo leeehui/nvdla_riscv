@@ -1,5 +1,5 @@
 
-#include "dla_test.h"
+#include "test_util.h"
 
 
 void signal_to_simulation(uint32_t value)

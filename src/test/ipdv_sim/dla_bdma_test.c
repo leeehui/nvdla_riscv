@@ -1,6 +1,6 @@
 
 #include "dla_engine_internal.h"
-#include "dla_test.h"
+#include "test_util.h"
 
 
 extern uint32_t dla_irq_flag;
