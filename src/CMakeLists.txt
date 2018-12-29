@@ -10,7 +10,8 @@ add_definitions(-DDLA_REG_TEST=1)
 
 set(NVDLA_DIR ../nvdla)
 set(STARTUP_DIR ./env)
-set(TEST_DIR ./test)
+set(TEST_SEARCH_DIR ./test)
+set(RUNTIME_SEARCH_DIR ./)
 
 project(nvdla)
 set(CMAKE_CXX_STANDARD 11)
@@ -19,7 +20,7 @@ enable_language(C)
 enable_language(ASM)
 
 set(SOURCE_FILES
-    ./main.c
+    ./riscv/main.c
     ./port/std_syscall.c
     ./arch/riscv/device.c
     ./arch/riscv/csr.c
@@ -31,7 +32,7 @@ set(SOURCE_FILES
     #${STARTUP_DIR}/common/rv64/macros.S
     ${STARTUP_DIR}/ariane/crt.S
     ${STARTUP_DIR}/ariane/setup.c
-    ${TEST_DIR}/test_util.c
+    ./test/test_util.c
     )
 
 set(NVDLA_SRC_FILES
@@ -52,11 +53,6 @@ set(NVDLA_SRC_FILES
     )
 
 
-set(RISC_RUNTIME_SRC_FILES
-    ./riscv_runtime.c
-    )
-
-
 include_directories(${NVDLA_DIR}/firmware)
 include_directories(${NVDLA_DIR}/firmware/include)
 include_directories(${NVDLA_DIR}/include)
@@ -66,7 +62,7 @@ include_directories(${STARTUP_DIR}/common)
 include_directories(${STARTUP_DIR}/common/rv64)
 include_directories(./include)
 include_directories(./include/arch/riscv)
-include_directories(${TEST_DIR})
+include_directories(./test)
 
 
 
@@ -88,23 +84,15 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,--gc-sections")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcmodel=medany")
 
 
-message("PLAT: " ${PLAT})
+message("PLAT : " ${PLAT})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -T ${PROJECT_SOURCE_DIR}/env/ariane/default.ld")
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -T ${PROJECT_SOURCE_DIR}/env/ariane/default_qemu.ld")
 
-if(PLAT STREQUAL "riscv_runtime")
-    add_executable(nvdla.elf ${SOURCE_FILES} ${NVDLA_SRC_FILES} ${RISC_RUNTIME_SRC_FILES})
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,-Map,${EXECUTABLE_OUTPUT_PATH}/nvdla.map")
-
-else()
-    string(CONCAT bin_file "${PLAT}/${BIN_NAME}" ".c")
-    find_file(IPDV_SIM_SRC_FILE NAMES ${bin_file} PATHS ${TEST_DIR} NO_DEFAULT_PATH)
-    if (IPDV_SIM_SRC_FILE)
-        message("file : ${IPDV_SIM_SRC_FILE}")
-        add_executable(nvdla.elf ${SOURCE_FILES} ${NVDLA_SRC_FILES} ${IPDV_SIM_SRC_FILE})
-    else ()
-        message("cannot find file.")
-    endif()
-
+string(CONCAT BIN_SRC_FILE_NAME "${PLAT}/${BIN_NAME}" ".c")
+find_file(BIN_SRC_FILE NAMES ${BIN_SRC_FILE_NAME} PATHS ${TEST_SEARCH_DIR} ${RUNTIME_SEARCH_DIR} NO_DEFAULT_PATH)
+if (BIN_SRC_FILE)
+    message("FILE : ${BIN_SRC_FILE}")
+    add_executable(nvdla.elf ${SOURCE_FILES} ${NVDLA_SRC_FILES} ${BIN_SRC_FILE})
+else ()
+    message("cannot find binary file, check the search dir.")
 endif()
-
