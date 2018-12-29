@@ -3,17 +3,8 @@
 #include <nvdla_riscv.h>
 #include "test_util.h"
 
-static void  nvdla_engine_isr_test(void);
-static int32_t dla_isr_handler_test(void);
-static void irq0_handler_test(void);
 
-static uint32_t dla_irq_flag_test = 0;
-static uint32_t task_notifier_test = 0;
-static uint32_t saved_irq = 0;
-static uint32_t chech_irq = MASK(GLB_S_INTR_STATUS_0, SDP_DONE_STATUS0) |
-                            MASK(GLB_S_INTR_STATUS_0, CACC_DONE_STATUS0) |
-                            MASK(GLB_S_INTR_STATUS_0, CDMA_DAT_DONE_STATUS0) |
-                            MASK(GLB_S_INTR_STATUS_0, CDMA_WT_DONE_STATUS0);
+extern uint32_t dla_irq_flag_test;
 void dla_conv_test(void)
 {
     cdma_reg_write(S_POINTER, 0x0);
@@ -137,55 +128,14 @@ void dla_conv_test(void)
 
 void riscv_runtime(void)
 {
+    uint32_t check_irq = MASK(GLB_S_INTR_STATUS_0, SDP_DONE_STATUS0) |
+                         MASK(GLB_S_INTR_STATUS_0, CACC_DONE_STATUS0) |
+                         MASK(GLB_S_INTR_STATUS_0, CDMA_DAT_DONE_STATUS0) |
+                         MASK(GLB_S_INTR_STATUS_0, CDMA_WT_DONE_STATUS0);
     // use handler for test
     register_irq_handler(IRQ_ID_IRQ0, irq0_handler_test);
+    set_check_irq(check_irq);
 
     dla_conv_test();
 }
 
-static void irq0_handler_test(void)
-{
-    debug(IRQ0, "irq0_handler.");
-    if (riscv_csr_read(ARIANE_CSR_DLA_TASK_CONF))
-    {
-        debug(IRQ0, "new task.");
-        notify_dla_irq(&task_notifier_test);
-        riscv_csr_write(ARIANE_CSR_DLA_TASK_CONF, 0);
-    }
-    else
-    {
-        debug(IRQ0, "dla intr.");
-        nvdla_engine_isr_test();
-    }
-}
-
-static void  nvdla_engine_isr_test(void)
-{
-	dla_isr_handler_test();
-    if (saved_irq == chech_irq)
-    {
-        notify_dla_irq(&dla_irq_flag_test);
-    }
-
-    return;
-}
-
-static int32_t dla_isr_handler_test(void)
-{
-	uint32_t mask;
-	uint32_t reg;
-
-
-	mask = glb_reg_read(S_INTR_MASK);
-	reg = glb_reg_read(S_INTR_STATUS);
-
-    saved_irq |= reg;
-    debug(IRQ0, "saved_irq: 0x%08x, reg: 0x%08x", saved_irq, reg);
-
-	glb_reg_write(S_INTR_STATUS, reg);
-
-	mask = glb_reg_read(S_INTR_MASK);
-	reg = glb_reg_read(S_INTR_STATUS);
-
-	RETURN(0);
-}

@@ -14,6 +14,8 @@ extern "C" {
 uint32_t gpsram_read32(uint64_t addr);
 void gpsram_write32(uint64_t addr, uint32_t value);
 void signal_to_simulation(uint32_t value);
+void irq0_handler_test(void);
+void set_check_irq(uint32_t check_irq_set);
 
 #ifdef __cplusplus
 }
