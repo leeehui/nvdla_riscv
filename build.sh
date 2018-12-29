@@ -19,12 +19,13 @@ if [ $# -eq 3 ]; then
         cd output
         dir=$(date +'%Y%m%d-%H%M%S')
         dir="${dir}.${1}_${2}"
+        output_name="${1}_${2}"
         mkdir $dir
 
         cp gpsram_blk_*.hex $dir
-        cp nvdla.bin.dat  "${dir}/${dir}.dat"
-        cp ../nvdla.dump "${dir}/${dir}.dump"
-        cp ../nvdla.elf  "${dir}/${dir}.elf"
+        cp nvdla.bin.dat  "${dir}/${output_name}.dat"
+        cp ../nvdla.dump "${dir}/${output_name}.dump"
+        cp ../nvdla.elf  "${dir}/${output_name}.elf"
         cp $dir /mnt/share -r
     else
         echo "invalid parameter 3"
