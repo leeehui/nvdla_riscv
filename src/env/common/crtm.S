@@ -23,6 +23,8 @@ bss_init:
 	sw		a6, 0(a4)
 	addi    a4, a4, 4
 	bleu	a4, a5, bss_init
+	# confirm all data has been written to mem
+	fence
 
     # set up stack pointer based on hartid
     csrr    t0, mhartid
