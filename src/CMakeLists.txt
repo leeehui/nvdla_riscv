@@ -74,8 +74,8 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
 #for compiler
 #set(CMAKE_C_FLAGS "-march=rv64imc -mabi=lp64")               #for compress compile
 #set(CMAKE_ASM_FLAGS "-march=rv64imc -mabi=lp64")
-set(CMAKE_C_FLAGS "-march=rv64im -mabi=lp64")
-set(CMAKE_ASM_FLAGS "-march=rv64im -mabi=lp64")
+set(CMAKE_C_FLAGS "-march=rv64ima -mabi=lp64")
+set(CMAKE_ASM_FLAGS "-march=rv64ima -mabi=lp64")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-pic")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g")
