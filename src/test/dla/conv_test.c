@@ -4,7 +4,12 @@
 #include "test_util.h"
 
 
-extern uint32_t dla_irq_flag_test;
+extern uint32_t dla_irq_notifier_test;
+static uint32_t saved_irq = 0;
+uint32_t check_irq = MASK(GLB_S_INTR_STATUS_0, SDP_DONE_STATUS0) |
+                     MASK(GLB_S_INTR_STATUS_0, CACC_DONE_STATUS0) |
+                     MASK(GLB_S_INTR_STATUS_0, CDMA_DAT_DONE_STATUS0) |
+                     MASK(GLB_S_INTR_STATUS_0, CDMA_WT_DONE_STATUS0);
 void dla_conv_test(void)
 {
     cdma_reg_write(S_POINTER, 0x0);
@@ -110,6 +115,7 @@ void dla_conv_test(void)
     sdp_reg_write(D_CVT_OFFSET, 0x0);
     sdp_reg_write(D_CVT_SCALE, 0x1);
     sdp_reg_write(D_CVT_SHIFT, 0x0);
+    mb();
 
     while(cdma_reg_read(S_CBUF_FLUSH_STATUS) != 1);
     
@@ -120,21 +126,18 @@ void dla_conv_test(void)
     cdma_reg_write(D_OP_ENABLE, 0x1);
     sdp_reg_write(D_OP_ENABLE, 0x1);
     sdp_rdma_reg_write(D_OP_ENABLE, 0x0);
+    mb();
 
-    wait_for_dla_irq(&dla_irq_flag_test);
+    wait_for_dla_flag(&dla_irq_notifier_test, &saved_irq, check_irq);
 
     signal_to_simulation(0xaa);
 }
 
 void riscv_runtime(void)
 {
-    uint32_t check_irq = MASK(GLB_S_INTR_STATUS_0, SDP_DONE_STATUS0) |
-                         MASK(GLB_S_INTR_STATUS_0, CACC_DONE_STATUS0) |
-                         MASK(GLB_S_INTR_STATUS_0, CDMA_DAT_DONE_STATUS0) |
-                         MASK(GLB_S_INTR_STATUS_0, CDMA_WT_DONE_STATUS0);
     // use handler for test
     register_irq_handler(IRQ_ID_IRQ0, irq0_handler_test);
-    set_check_irq(check_irq);
+    set_saved_irq(&saved_irq);
 
     dla_conv_test();
 }

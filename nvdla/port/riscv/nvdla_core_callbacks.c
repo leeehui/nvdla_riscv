@@ -139,9 +139,9 @@ void dla_reg_write(void *driver_context, uint32_t addr, uint32_t reg)
 	if (!nvdla_dev)
 		return;
 
-    mb();
+    //mb();
     *(volatile uint32_t *)(uintptr_t)(nvdla_dev->base + addr) = reg;
-    mb();
+    //mb();
 }
 
 uint32_t dla_reg_read(void *driver_context, uint32_t addr)
@@ -153,9 +153,9 @@ uint32_t dla_reg_read(void *driver_context, uint32_t addr)
 	if (!nvdla_dev)
 		return 0;
 
-    mb();
+    //mb();
     val = *(volatile uint32_t *)(uintptr_t)(nvdla_dev->base + addr);
-    mb();
+    //mb();
 	return val;
 }
 

@@ -80,35 +80,24 @@ static inline void spinlock_unlock_irqrestore(spinlock_t* lock, long flags)
 
 static inline void wait_for_dla_irq(uint32_t *notifier)
 {
-    while (1) {
-        //disable interrupt, this is because interrupt may occur between atomic_read and atomic_set
-        disable_irq0();
-        if (atomic_read(notifier)) {
-            atomic_set(notifier, 0);
-            // enable interrupt
-            enable_irq0();
-            break;
-        }
-        //enable interrupt before wfi
-        enable_irq0();
-        // it's ok for interrupt occurs here, as pend bit will wake up the core immediately after wfi()
-        wfi(); 
-    }
+    while (!atomic_read(notifier));
+    atomic_set(notifier, (*notifier) - 1);
 }
 
 static inline void notify_dla_irq(uint32_t *notifier)
 {
-    if (*notifier) {
-        // Fatal error, interrupt intervals too small, software has no time to clear dla_irq_flag
-        // maybe FIFO event list is the solution
-        // Update: currently it is theoretically impossible to be here as we have disabled irq0 before dla_irq_flag is cleared
-        //          so, the only reason for being here is wrongly set dla_irq_flag somewhere else
-        debug(ATOMIC, "Fatal error: dla notifier.");
-        return;
+    atomic_set(notifier, (*notifier) + 1);
+}
+
+static inline void wait_for_dla_flag(uint32_t *notifier, uint32_t *saved_irq_ptr,  uint32_t check_irq)
+{
+    while( atomic_read(saved_irq_ptr) != check_irq )
+    {
+        wait_for_dla_irq(notifier);
     }
-    atomic_set(notifier, 1);
 }
 
 #ifdef __cplusplus
 }
 #endif
+

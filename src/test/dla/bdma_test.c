@@ -4,7 +4,9 @@
 #include "test_util.h"
 
 
-extern uint32_t dla_irq_flag_test;
+extern uint32_t dla_irq_notifier_test;
+static uint32_t saved_irq = 0;
+uint32_t check_irq = MASK(GLB_S_INTR_STATUS_0, BDMA_DONE_STATUS0);
 void dla_bdma_test(void)
 {
     bdma_reg_write(CFG_DST_SURF, 0x800);
@@ -22,18 +24,19 @@ void dla_bdma_test(void)
     bdma_reg_write(CFG_OP, 0x1);
     bdma_reg_write(CFG_LAUNCH0, 0x1);
 
-    wait_for_dla_irq(&dla_irq_flag_test);
+    mb();
+
+    wait_for_dla_flag(&dla_irq_notifier_test, &saved_irq, check_irq);
 
     signal_to_simulation(0xaa);
 }
 
 void riscv_runtime(void)
 {
-    uint32_t check_irq = MASK(GLB_S_INTR_STATUS_0, BDMA_DONE_STATUS0);
 
     // use handler for test
     register_irq_handler(IRQ_ID_IRQ0, irq0_handler_test);
-    set_check_irq(check_irq);
+    set_saved_irq(&saved_irq);
 
     dla_bdma_test();
 }

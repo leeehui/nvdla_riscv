@@ -110,11 +110,11 @@ void dla_reg_group_test(dla_reg_t *dla_reg)
         uint32_t write_value_1 = 0x5a5a5a5a;
         uint32_t write_value_2 = 0x0;
         dla_reg_write(get_nvdla_dev(), reg, write_value_1);
-        value = dla_reg_read(get_nvdla_dev(), reg);
-        debug(DLA_REG_TEST, "0x%05x : 0x%08x(write_val:0x%08x)", reg, value, write_value_1);
-        dla_reg_write(get_nvdla_dev(), reg, write_value_2);
-        value = dla_reg_read(get_nvdla_dev(), reg);
-        debug(DLA_REG_TEST, "0x%05x : 0x%08x(write_val:0x%08x)", reg, value, write_value_2);
+        //value = dla_reg_read(get_nvdla_dev(), reg);
+        //debug(DLA_REG_TEST, "0x%05x : 0x%08x(write_val:0x%08x)", reg, value, write_value_1);
+        //dla_reg_write(get_nvdla_dev(), reg, write_value_2);
+        //value = dla_reg_read(get_nvdla_dev(), reg);
+        //debug(DLA_REG_TEST, "0x%05x : 0x%08x(write_val:0x%08x)", reg, value, write_value_2);
     }
 }
 
@@ -135,8 +135,9 @@ void riscv_runtime(void)
     disable_irq_global(MIE);
 
     dla_reg_test(&regs[0]);
+    mb();
 
-    dla_reg_rw_check_test();
+    //dla_reg_rw_check_test();
 
     signal_to_simulation(0xaa);
 }   

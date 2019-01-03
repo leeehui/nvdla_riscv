@@ -1,9 +1,8 @@
 
 #include "test_util.h"
 
-uint32_t dla_irq_flag_test = 0;
-static uint32_t saved_irq = 0;
-static uint32_t check_irq = 0;
+uint32_t dla_irq_notifier_test = 0;
+static uint32_t *saved_irq_ptr = NULL;
 static void  nvdla_engine_isr_test(void);
 static int32_t dla_isr_handler_test(void);
 
@@ -36,18 +35,15 @@ void irq0_handler_test(void)
         nvdla_engine_isr_test();
     }
 }
-void set_check_irq(uint32_t check_irq_set)
+void set_saved_irq(uint32_t *saved_irq_ptr_set)
 {
-    check_irq = check_irq_set;
+    saved_irq_ptr = saved_irq_ptr_set;
 }
 
 static void  nvdla_engine_isr_test(void)
 {
 	dla_isr_handler_test();
-    if (saved_irq == check_irq)
-    {
-        notify_dla_irq(&dla_irq_flag_test);
-    }
+    notify_dla_irq(&dla_irq_notifier_test);
 
     return;
 }
@@ -61,10 +57,11 @@ static int32_t dla_isr_handler_test(void)
 	mask = glb_reg_read(S_INTR_MASK);
 	reg = glb_reg_read(S_INTR_STATUS);
 
-    saved_irq |= reg;
-    debug(IRQ0, "saved_irq: 0x%08x, reg: 0x%08x", saved_irq, reg);
+    *saved_irq_ptr |= reg;
+    debug(IRQ0, "saved_irq: 0x%08x, reg: 0x%08x", *saved_irq_ptr, reg);
 
 	glb_reg_write(S_INTR_STATUS, reg);
+    mb();
 
 	mask = glb_reg_read(S_INTR_MASK);
 	reg = glb_reg_read(S_INTR_STATUS);
