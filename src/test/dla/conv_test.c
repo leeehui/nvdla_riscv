@@ -36,7 +36,7 @@ void dla_conv_test(void)
     cdma_reg_write(D_WEIGHT_SIZE_1, 0xf);
     cdma_reg_write(D_WEIGHT_RAM_TYPE, 0x1);
     cdma_reg_write(D_WEIGHT_ADDR_LOW, gpsram_read32(DLA_BASE + 8));
-    cdma_reg_write(D_WEIGHT_ADDR_HIGH, gpsram_read32(DLA_BASE + 16));
+    cdma_reg_write(D_WEIGHT_ADDR_HIGH, gpsram_read32(DLA_BASE + 12));
     cdma_reg_write(D_WEIGHT_BYTES, 0x10000);
     cdma_reg_write(D_WGS_ADDR_LOW, 0x0);
     cdma_reg_write(D_WGS_ADDR_HIGH, 0x0);
@@ -80,7 +80,7 @@ void dla_conv_test(void)
     cacc_reg_write(D_MISC_CFG, 0x1000);
     cacc_reg_write(D_DATAOUT_SIZE_0, 0x0);
     cacc_reg_write(D_DATAOUT_SIZE_1, 0xf);
-    cacc_reg_write(D_DATAOUT_ADDR, gpsram_read32(DLA_BASE + 20));
+    cacc_reg_write(D_DATAOUT_ADDR, gpsram_read32(DLA_BASE + 16));
     cacc_reg_write(D_BATCH_NUMBER, 0x0);
     cacc_reg_write(D_LINE_STRIDE, 0x20);
     cacc_reg_write(D_SURF_STRIDE, 0x20);
@@ -97,8 +97,8 @@ void dla_conv_test(void)
     sdp_reg_write(D_DATA_CUBE_WIDTH, 0x0);
     sdp_reg_write(D_DATA_CUBE_HEIGHT, 0x0);
     sdp_reg_write(D_DATA_CUBE_CHANNEL, 0xf);
-    sdp_reg_write(D_DST_BASE_ADDR_LOW, gpsram_read32(DLA_BASE + 20));
-    sdp_reg_write(D_DST_BASE_ADDR_HIGH, gpsram_read32(DLA_BASE + 24));
+    sdp_reg_write(D_DST_BASE_ADDR_LOW, gpsram_read32(DLA_BASE + 16));
+    sdp_reg_write(D_DST_BASE_ADDR_HIGH, gpsram_read32(DLA_BASE + 20));
     sdp_reg_write(D_DST_LINE_STRIDE, 0x20);
     sdp_reg_write(D_DST_SURFACE_STRIDE, 0x20);
     sdp_reg_write(D_DP_BS_CFG, 0x1a);
@@ -115,7 +115,7 @@ void dla_conv_test(void)
     sdp_reg_write(D_CVT_OFFSET, 0x0);
     sdp_reg_write(D_CVT_SCALE, 0x1);
     sdp_reg_write(D_CVT_SHIFT, 0x0);
-    mb();
+    __man_mb();
 
     while(cdma_reg_read(S_CBUF_FLUSH_STATUS) != 1);
     
@@ -126,7 +126,7 @@ void dla_conv_test(void)
     cdma_reg_write(D_OP_ENABLE, 0x1);
     sdp_reg_write(D_OP_ENABLE, 0x1);
     sdp_rdma_reg_write(D_OP_ENABLE, 0x0);
-    mb();
+    __man_mb();
 
     wait_for_dla_flag(&dla_irq_notifier_test, &saved_irq, check_irq);
 

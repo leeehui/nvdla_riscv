@@ -138,25 +138,17 @@ void dla_reg_write(void *driver_context, uint32_t addr, uint32_t reg)
 
 	if (!nvdla_dev)
 		return;
-
-    //mb();
-    *(volatile uint32_t *)(uintptr_t)(nvdla_dev->base + addr) = reg;
-    //mb();
+    writel(reg, (nvdla_dev->base + addr));
 }
 
 uint32_t dla_reg_read(void *driver_context, uint32_t addr)
 {
-    uint32_t val;
 	struct nvdla_device *nvdla_dev =
 			(struct nvdla_device *)driver_context;
 
 	if (!nvdla_dev)
 		return 0;
-
-    //mb();
-    val = *(volatile uint32_t *)(uintptr_t)(nvdla_dev->base + addr);
-    //mb();
-	return val;
+    return readl(nvdla_dev->base + addr);
 }
 
 void  nvdla_engine_isr(int32_t irq, void *data)

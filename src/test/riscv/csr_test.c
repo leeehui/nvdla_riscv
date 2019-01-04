@@ -18,5 +18,5 @@ void ariane_csr_read_write(void)
 void riscv_runtime(void)
 {
     riscv_csr_read_write();
-    ariane_csr_read_write();
+    //ariane_csr_read_write();
 }

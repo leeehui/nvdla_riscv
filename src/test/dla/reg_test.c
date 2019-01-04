@@ -135,7 +135,7 @@ void riscv_runtime(void)
     disable_irq_global(MIE);
 
     dla_reg_test(&regs[0]);
-    mb();
+    __man_mb();
 
     //dla_reg_rw_check_test();
 

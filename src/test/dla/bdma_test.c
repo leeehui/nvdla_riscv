@@ -24,7 +24,7 @@ void dla_bdma_test(void)
     bdma_reg_write(CFG_OP, 0x1);
     bdma_reg_write(CFG_LAUNCH0, 0x1);
 
-    mb();
+    __man_mb();
 
     wait_for_dla_flag(&dla_irq_notifier_test, &saved_irq, check_irq);
 

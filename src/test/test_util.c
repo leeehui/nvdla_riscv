@@ -9,7 +9,7 @@ static int32_t dla_isr_handler_test(void);
 void signal_to_simulation(uint32_t value)
 {
     gpsram_write32(SIM_SIGNAL_ADDR, value);
-    mb();
+    mb_always_required();
 }
 
 void gpsram_write32(uint64_t addr, uint32_t value)
@@ -61,7 +61,7 @@ static int32_t dla_isr_handler_test(void)
     debug(IRQ0, "saved_irq: 0x%08x, reg: 0x%08x", *saved_irq_ptr, reg);
 
 	glb_reg_write(S_INTR_STATUS, reg);
-    mb();
+    __man_mb();
 
 	mask = glb_reg_read(S_INTR_MASK);
 	reg = glb_reg_read(S_INTR_STATUS);

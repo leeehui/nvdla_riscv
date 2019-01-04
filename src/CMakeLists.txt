@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_C_COMPILER    riscv64-unknown-elf-gcc)
 set(CMAKE_CXX_COMPILER  riscv64-unknown-elf-g++)
 
+# macro controls
+add_definitions(-DUSE_HW_IO_CFG=0) # this means whether a hw patch is added to config mmio space as uncacheable
+
+# Note 1: __man_mb() exists non-empty when at least one of the following is 0
+# Note 2: if -DUSE_HW_IO_CFG=1 all barriers regarded as empty defines
+add_definitions(-DUSE_R_MB=1) # read memory barrier
+add_definitions(-DUSE_W_MB=1) # write memory barrier
+
+# log controls
 add_definitions(-DMAIN=1) #-DMAIN=0 to remove log
 add_definitions(-DATOMIC=1)
 add_definitions(-DTRAP=1)
@@ -88,6 +97,7 @@ message("PLAT : " ${PLAT})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -T ${PROJECT_SOURCE_DIR}/env/ariane/default.ld")
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -T ${PROJECT_SOURCE_DIR}/env/ariane/default_qemu.ld")
 
+# Note: the file name should include its parent dir
 string(CONCAT BIN_SRC_FILE_NAME "${PLAT}/${BIN_NAME}" ".c")
 find_file(BIN_SRC_FILE NAMES ${BIN_SRC_FILE_NAME} PATHS ${TEST_SEARCH_DIR} ${RUNTIME_SEARCH_DIR} NO_DEFAULT_PATH)
 if (BIN_SRC_FILE)

@@ -72,6 +72,57 @@ static inline long spinlock_lock_irqsave(spinlock_t* lock)
   return flags;
 }
 
+#define mb_always_required() asm volatile ("fence" ::: "memory")
+static inline void __raw_writel(uint32_t val, volatile void *addr)
+{
+    asm volatile("sw %0, 0(%1)" :: "r"(val), "r"(addr));
+}
+
+static inline uint32_t __raw_readl(const volatile void *addr)
+{
+    uint32_t val;
+    asm volatile("lw %0, 0(%1)" : "=r" (val) : "r" (addr));
+    return val;
+}
+
+#if(!USE_HW_IO_CFG)
+
+    #if(USE_R_MB)
+        #define __io_br() do {} while (0)
+        #define __io_ar() __asm__ __volatile__ ("fence i,r" :::"memory");
+    #else
+        #define __io_br() do {} while (0)
+        #define __io_ar() do {} while (0)
+    #endif
+    
+    #if(USE_W_MB)
+        #define __io_bw() __asm__ __volatile__ ("fence w,o" :::"memory");
+        #define __io_aw() do {} while (0)
+    #else
+        #define __io_bw() do {} while (0)
+        #define __io_aw() do {} while (0)
+    #endif
+    
+    #if((!USE_R_MB) || (!USE_W_MB))
+        #define __man_mb() asm volatile ("fence" ::: "memory")
+    #else
+        #define __man_mb() 
+    #endif
+
+#else
+
+    #define __io_br() do {} while (0)
+    #define __io_ar() do {} while (0)
+    #define __io_bw() do {} while (0)
+    #define __io_aw() do {} while (0)
+    #define __man_mb() 
+
+#endif
+
+
+#define readl(c)        ({ uint32_t __v; __io_br(); __v = __raw_readl(c); __io_ar(); __v;})
+#define writel(v, c)    ({ __io_bw(); __raw_writel((v),(c)); __io_aw(); })
+
 static inline void spinlock_unlock_irqrestore(spinlock_t* lock, long flags)
 {
   spinlock_unlock(lock);
