@@ -12,6 +12,7 @@ uint32_t riscv_csr_read(uint64_t addr);
 void riscv_csr_write(uint64_t addr, uint32_t value);
 void enable_dla_irq_to_ap(void);
 void disable_dla_irq_to_ap(void);
+void send_irq_to_ap(void);
 
 #define     RISCV_BASE                      (0xFFA8000000)
 
@@ -44,6 +45,7 @@ void disable_dla_irq_to_ap(void);
 #define     ARIANE_CSR_FW_ERROR_CODE         (ARIANE_CSR_BASE + 0x78)
 #define     ARIANE_CSR_FW_ERROR_CODE_EXT     (ARIANE_CSR_BASE + 0x7C)
 #define     ARIANE_CSR_INTR_IN_TRIG          (ARIANE_CSR_BASE + 0x80)
+#define     ARIANE_CSR_DLA_SS_TESTBUS_SEL    (ARIANE_CSR_BASE + 0xF0)
 
 
 #define     DLA_HW_INTR_MASK                (1<<0)

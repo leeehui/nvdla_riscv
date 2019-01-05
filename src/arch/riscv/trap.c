@@ -95,16 +95,12 @@ void register_irq_handler(uint32_t id, irq_handler_t fn)
 
 void disable_irq_global(uint64_t mask)
 {
-    uint64_t mstatus = read_csr_enum(csr_mstatus);
-    mstatus = mstatus & (~mask);
-    write_csr_enum(csr_mstatus, mstatus);  
+    read_clear_csr(mstatus, mask);
 }
 
 void enable_irq_global(uint64_t mask)
 {
-    uint64_t mstatus = read_csr_enum(csr_mstatus);
-    mstatus = mstatus | (mask);
-    write_csr_enum(csr_mstatus, mstatus);  
+    read_set_csr(mstatus, mask);
 }
 
 
@@ -112,9 +108,7 @@ void disable_irq(uint32_t id)
 {
     if (id < IRQ_NUM)
     {
-        uint64_t mie = read_csr_enum(csr_mie);
-        mie = mie & (~irq_masks[id]);
-        write_csr_enum(csr_mie, mie);  
+        read_clear_csr(mie, irq_masks[id]);
     }
 }
 
@@ -122,9 +116,7 @@ void enable_irq(uint32_t id)
 {
     if (id < IRQ_NUM)
     {
-        uint64_t mie = read_csr_enum(csr_mie);
-        mie = mie | (irq_masks[id]);
-        write_csr_enum(csr_mie, mie);  
+        read_set_csr(mie, irq_masks[id]);
     }
 }
 

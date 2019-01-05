@@ -29,3 +29,7 @@ void disable_dla_irq_to_ap(void)
     riscv_csr_write(ARIANE_CSR_IN2EX_MASK, value);
 }
 
+void send_irq_to_ap(void)
+{
+    riscv_csr_write(ARIANE_CSR_INTR_IN_TRIG, 0x1);
+}
