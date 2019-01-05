@@ -130,6 +130,7 @@ int32_t nvdla_init(struct nvdla_device *nvdla_dev);
 void  nvdla_engine_isr(int32_t irq, void *data);
 void* get_nvdla_dev(void);
 void* get_local_task(void);
+void update_submit_task_params(void);
 /**
  * @brief			Get DMA address
  *

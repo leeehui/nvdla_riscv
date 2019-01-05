@@ -70,6 +70,16 @@ void* get_local_task(void)
     return &local_task;
 }
 
+void update_submit_task_params(void)
+{
+    struct nvdla_submit_task *local_task;
+    uint64_t addrl = riscv_csr_read(ARIANE_CSR_TASK_POINTER_L);
+    uint64_t addrh = riscv_csr_read(ARIANE_CSR_TASK_POINTER_H);
+    uint64_t addr = (addrh << 32) + addrl;
+    local_task = get_local_task();
+    memcpy(local_task, (void *)addr, sizeof(struct nvdla_submit_task));
+}
+
 static struct nvdla_config nvdla_config_os_initial = {
 	.atom_size = 32,
 	.bdma_enable = true,
