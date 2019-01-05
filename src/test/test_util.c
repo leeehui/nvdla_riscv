@@ -10,6 +10,7 @@ void signal_to_simulation(uint32_t value)
 {
     gpsram_write32(SIM_SIGNAL_ADDR, value);
     mb_always_required();
+    send_irq_to_ap();
 }
 
 void gpsram_write32(uint64_t addr, uint32_t value)
