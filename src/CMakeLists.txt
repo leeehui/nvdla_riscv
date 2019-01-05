@@ -3,12 +3,7 @@ set(CMAKE_C_COMPILER    riscv64-unknown-elf-gcc)
 set(CMAKE_CXX_COMPILER  riscv64-unknown-elf-g++)
 
 # macro controls
-add_definitions(-DUSE_HW_IO_CFG=0) # this means whether a hw patch is added to config mmio space as uncacheable
-
-# Note 1: __man_mb() exists non-empty when at least one of the following is 0
-# Note 2: if -DUSE_HW_IO_CFG=1 all barriers regarded as empty defines
-add_definitions(-DUSE_R_MB=1) # read memory barrier
-add_definitions(-DUSE_W_MB=1) # write memory barrier
+add_definitions(-DUSE_IO_MB=0) #
 
 # log controls
 add_definitions(-DMAIN=1) #-DMAIN=0 to remove log

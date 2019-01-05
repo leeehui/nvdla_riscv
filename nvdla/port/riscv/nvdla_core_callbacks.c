@@ -38,7 +38,7 @@
 #include <nvdla_riscv.h>
 #include "femto.h"
 
-uint32_t dla_irq_flag = 0;
+uint32_t dla_irq_notifier = 0;
 
 uint32_t task_notifier = 0;
 static void irq0_handler(void)
@@ -161,7 +161,7 @@ void  nvdla_engine_isr(int32_t irq, void *data)
 
 	dla_isr_handler(nvdla_dev->engine_context);
 
-    notify_dla_irq(&dla_irq_flag);
+    notify_dla_irq(&dla_irq_notifier);
 
     return;
 }
@@ -265,7 +265,7 @@ static int32_t nvdla_task_submit(struct nvdla_device *nvdla_dev, struct nvdla_ta
 	while (1) {
 
         //TODO: wait for interrupt, probably WFI instruction
-        wait_for_dla_irq(&dla_irq_flag);
+        wait_for_dla_irq(&dla_irq_notifier);
 
 		err = dla_process_events(nvdla_dev->engine_context, &task_complete);
 

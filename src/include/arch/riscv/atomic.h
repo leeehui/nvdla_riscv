@@ -85,40 +85,17 @@ static inline uint32_t __raw_readl(const volatile void *addr)
     return val;
 }
 
-#if(!USE_HW_IO_CFG)
-
-    #if(USE_R_MB)
-        #define __io_br() do {} while (0)
-        #define __io_ar() __asm__ __volatile__ ("fence i,r" :::"memory");
-    #else
-        #define __io_br() do {} while (0)
-        #define __io_ar() do {} while (0)
-    #endif
-    
-    #if(USE_W_MB)
-        #define __io_bw() __asm__ __volatile__ ("fence w,o" :::"memory");
-        #define __io_aw() do {} while (0)
-    #else
-        #define __io_bw() do {} while (0)
-        #define __io_aw() do {} while (0)
-    #endif
-    
-    #if((!USE_R_MB) || (!USE_W_MB))
-        #define __man_mb() asm volatile ("fence" ::: "memory")
-    #else
-        #define __man_mb() 
-    #endif
-
+#if(USE_IO_MB)
+    #define __io_br() do {} while (0)
+    #define __io_ar() __asm__ __volatile__ ("fence i,r" :::"memory");
+    #define __io_bw() __asm__ __volatile__ ("fence w,o" :::"memory");
+    #define __io_aw() do {} while (0)
 #else
-
     #define __io_br() do {} while (0)
     #define __io_ar() do {} while (0)
     #define __io_bw() do {} while (0)
     #define __io_aw() do {} while (0)
-    #define __man_mb() 
-
 #endif
-
 
 #define readl(c)        ({ uint32_t __v; __io_br(); __v = __raw_readl(c); __io_ar(); __v;})
 #define writel(v, c)    ({ __io_bw(); __raw_writel((v),(c)); __io_aw(); })

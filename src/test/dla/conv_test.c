@@ -115,7 +115,6 @@ void dla_conv_test(void)
     sdp_reg_write(D_CVT_OFFSET, 0x0);
     sdp_reg_write(D_CVT_SCALE, 0x1);
     sdp_reg_write(D_CVT_SHIFT, 0x0);
-    __man_mb();
 
     while(cdma_reg_read(S_CBUF_FLUSH_STATUS) != 1);
     
@@ -126,7 +125,6 @@ void dla_conv_test(void)
     cdma_reg_write(D_OP_ENABLE, 0x1);
     sdp_reg_write(D_OP_ENABLE, 0x1);
     sdp_rdma_reg_write(D_OP_ENABLE, 0x0);
-    __man_mb();
 
     wait_for_dla_flag(&dla_irq_notifier_test, &saved_irq, check_irq);
 
