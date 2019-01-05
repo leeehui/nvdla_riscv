@@ -131,6 +131,12 @@ int64_t dla_get_time_us(void)
     return 0;
 }
 
+// DLA has normal memory master(DMA) which could be conflict with cpu
+// e.g. 
+// cpu write data to normal memory
+// data actually resides in cache
+// cpu writel DLA regs to start  <----fence w,o should be added so that data flushed before DLA start
+// DLA read data from normal memory
 void dla_reg_write(void *driver_context, uint32_t addr, uint32_t reg)
 {
 	struct nvdla_device *nvdla_dev =

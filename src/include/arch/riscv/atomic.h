@@ -85,20 +85,21 @@ static inline uint32_t __raw_readl(const volatile void *addr)
     return val;
 }
 
-#if(USE_IO_MB)
-    #define __io_br() do {} while (0)
-    #define __io_ar() __asm__ __volatile__ ("fence i,r" :::"memory");
-    #define __io_bw() __asm__ __volatile__ ("fence w,o" :::"memory");
-    #define __io_aw() do {} while (0)
-#else
-    #define __io_br() do {} while (0)
-    #define __io_ar() do {} while (0)
-    #define __io_bw() do {} while (0)
-    #define __io_aw() do {} while (0)
-#endif
+#define __io_br() do {} while (0)
+#define __io_ar() __asm__ __volatile__ ("fence i,r" :::"memory");
+#define __io_bw() __asm__ __volatile__ ("fence w,o" :::"memory");
+#define __io_aw() do {} while (0)
 
 #define readl(c)        ({ uint32_t __v; __io_br(); __v = __raw_readl(c); __io_ar(); __v;})
 #define writel(v, c)    ({ __io_bw(); __raw_writel((v),(c)); __io_aw(); })
+
+#define __io_rbr() do {} while (0)
+#define __io_rar() do {} while (0)
+#define __io_rbw() do {} while (0)
+#define __io_raw() do {} while (0)
+
+#define readl_relaxed(c)        ({ uint32_t __v; __io_rbr(); __v = __raw_readl(c); __io_rar(); __v;})
+#define writel_relaxed(v, c)    ({ __io_rbw(); __raw_writel((v),(c)); __io_raw(); })
 
 static inline void spinlock_unlock_irqrestore(spinlock_t* lock, long flags)
 {

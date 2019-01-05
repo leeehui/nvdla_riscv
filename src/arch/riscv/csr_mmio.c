@@ -2,17 +2,18 @@
 #include "femto.h"
 
 
+// single core, in-order, device of riscv subsystem do NOT need barrier
+// as the devices have no need to access outer normal memory(unlike DLA)
 uint32_t riscv_csr_read(uint64_t addr)
 {
     uint32_t val;
-
-    val = readl((void *)addr);
+    val = readl_relaxed((void *)addr);
     return val;
 }
 
 void riscv_csr_write(uint64_t addr, uint32_t value)
 {
-    writel(value, (void *)addr);
+    writel_relaxed(value, (void *)addr);
 }
 
 void enable_dla_irq_to_ap(void)

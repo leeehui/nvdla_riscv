@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_C_COMPILER    riscv64-unknown-elf-gcc)
 set(CMAKE_CXX_COMPILER  riscv64-unknown-elf-g++)
 
-# macro controls
-add_definitions(-DUSE_IO_MB=0) #
-
 # log controls
 add_definitions(-DMAIN=1) #-DMAIN=0 to remove log
 add_definitions(-DATOMIC=1)
