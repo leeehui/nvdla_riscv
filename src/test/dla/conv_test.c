@@ -22,8 +22,8 @@ void dla_conv_test(void)
     cdma_reg_write(D_DAIN_RAM_TYPE, 0x1);
     cdma_reg_write(D_DAIN_ADDR_LOW_0, gpsram_read32(DLA_BASE));
     cdma_reg_write(D_DAIN_ADDR_HIGH_0, gpsram_read32(DLA_BASE + 4));
-    cdma_reg_write(D_DAIN_ADDR_LOW_0, 0x0);
-    cdma_reg_write(D_DAIN_ADDR_HIGH_0, 0x0);
+    cdma_reg_write(D_DAIN_ADDR_LOW_1, 0x0);
+    cdma_reg_write(D_DAIN_ADDR_HIGH_1, 0x0);
     cdma_reg_write(D_LINE_STRIDE, 0x100);
     cdma_reg_write(D_SURF_STRIDE, 0x800);
     cdma_reg_write(D_DAIN_MAP, 0x10001);
