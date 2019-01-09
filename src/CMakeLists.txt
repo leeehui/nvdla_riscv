@@ -8,6 +8,7 @@ add_definitions(-DATOMIC=1)
 add_definitions(-DTRAP=1)
 add_definitions(-DIRQ0=1)
 add_definitions(-DDLA_REG_TEST=1)
+add_definitions(-DMEM_TEST=1)
 
 set(NVDLA_DIR ../nvdla)
 set(STARTUP_DIR ./env)
