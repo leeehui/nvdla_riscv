@@ -11,6 +11,7 @@ void riscv_runtime(void)
     gpsram_write32(DLA_BASE+12, 0xa5a5a5a5);
     mb();
     debug(MEM_TEST, "gpsram(%p): 0x%x, 0x%x, 0x%x, 0x%x", 
+            DLA_BASE,
             gpsram_read32(DLA_BASE), 
             gpsram_read32(DLA_BASE+4), 
             gpsram_read32(DLA_BASE+8), 
@@ -22,6 +23,7 @@ void riscv_runtime(void)
     *(volatile uint32_t*)(uintptr_t)(0xffa890000c) = 0xa5a5a5a5;
     mb();
     debug(MEM_TEST, "cvsram(%p): 0x%x, 0x%x, 0x%x, 0x%x", 
+            0xffa8900000,
             *(volatile uint32_t*)(uintptr_t)(0xffa8900000),
             *(volatile uint32_t*)(uintptr_t)(0xffa8900004),
             *(volatile uint32_t*)(uintptr_t)(0xffa8900008),
@@ -32,12 +34,13 @@ void riscv_runtime(void)
     *(volatile uint32_t*)(uintptr_t)(0x10000008) = 0x5a5a5a5a;
     *(volatile uint32_t*)(uintptr_t)(0x1000000c) = 0xa5a5a5a5;
     mb();
-    debug(MEM_TEST, "cvsram(%p): 0x%x, 0x%x, 0x%x, 0x%x", 
+    debug(MEM_TEST, "ddr(%p): 0x%x, 0x%x, 0x%x, 0x%x", 
+            0x10000000,
             *(volatile uint32_t*)(uintptr_t)(0x10000000),
             *(volatile uint32_t*)(uintptr_t)(0x10000004),
             *(volatile uint32_t*)(uintptr_t)(0x10000008),
             *(volatile uint32_t*)(uintptr_t)(0x1000000c));
 
-    signal_to_simulation(0xaa);
+    send_end_to_simulation();
 
 }

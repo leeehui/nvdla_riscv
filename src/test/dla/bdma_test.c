@@ -26,7 +26,7 @@ void dla_bdma_test(void)
 
     wait_for_dla_flag(&dla_irq_notifier_test, &saved_irq, check_irq);
 
-    signal_to_simulation(0xaa);
+    send_end_to_simulation();
 }
 
 void riscv_runtime(void)

@@ -26,6 +26,6 @@ void riscv_runtime(void)
 
     wait_for_dla_irq(&task_notifier_test);
 
-    signal_to_simulation(0xaa);
+    send_end_to_simulation();
 
 }

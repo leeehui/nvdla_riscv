@@ -136,7 +136,7 @@ void riscv_runtime(void)
 
     dla_reg_test(&regs[0]);
 
-    dla_reg_rw_check_test();
+    //dla_reg_rw_check_test();
 
-    signal_to_simulation(0xaa);
+    send_end_to_simulation();
 }   

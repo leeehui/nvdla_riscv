@@ -2,16 +2,21 @@
 #include "test_util.h"
 
 uint32_t dla_irq_notifier_test = 0;
+uint32_t dla_task_notifier_test = 0;
 static uint32_t *saved_irq_ptr = NULL;
 static void  nvdla_engine_isr_test(void);
 static int32_t dla_isr_handler_test(void);
 
-void signal_to_simulation(uint32_t value)
+void send_end_to_simulation(void)
+{
+    send_irq_to_ap();
+    while(1);
+}
+
+void send_signal_to_simulation(uint32_t value)
 {
     gpsram_write32(SIM_SIGNAL_ADDR, value);
     mb_always_required();
-    send_irq_to_ap();
-    while(1);
 }
 
 void gpsram_write32(uint64_t addr, uint32_t value)
@@ -30,6 +35,7 @@ void irq0_handler_test(void)
     if (riscv_csr_read(ARIANE_CSR_DLA_TASK_CONF))
     {
         debug(IRQ0, "new task.");
+        notify_dla_irq(&dla_task_notifier_test);
     }
     else
     {
@@ -59,8 +65,15 @@ static int32_t dla_isr_handler_test(void)
 	mask = glb_reg_read(S_INTR_MASK);
 	reg = glb_reg_read(S_INTR_STATUS);
 
-    *saved_irq_ptr |= reg;
-    debug(IRQ0, "saved_irq: 0x%08x, reg: 0x%08x", *saved_irq_ptr, reg);
+    if(saved_irq_ptr != NULL)
+    {
+        *saved_irq_ptr |= reg;
+        debug(IRQ0, "saved_irq: 0x%08x, reg: 0x%08x", *saved_irq_ptr, reg);
+    }
+    else
+    {
+        debug(IRQ0, "ERROR: saved_irq_ptr not set");
+    }
 
 	glb_reg_write(S_INTR_STATUS, reg);
 

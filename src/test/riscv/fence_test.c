@@ -37,6 +37,6 @@ void riscv_runtime(void)
     __asm__ __volatile__ ("fence w,w" :::"memory");
     *(volatile uint32_t*)(uintptr_t)(ARIANE_CSR_INTR_IN_TRIG) = 0x1;
 
-    signal_to_simulation(0xaa);
+    send_end_to_simulation();
 
 }
