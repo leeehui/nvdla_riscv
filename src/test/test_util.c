@@ -36,6 +36,7 @@ void irq0_handler_test(void)
     {
         debug(IRQ0, "new task.");
         notify_dla_irq(&dla_task_notifier_test);
+        riscv_csr_write(ARIANE_CSR_DLA_TASK_CONF, 0);
     }
     else
     {
