@@ -29,17 +29,7 @@ void riscv_runtime(void)
             *(volatile uint32_t*)(uintptr_t)(0xffa8900008),
             *(volatile uint32_t*)(uintptr_t)(0xffa890000c));
     
-    *(volatile uint32_t*)(uintptr_t)(0x10000000) = 0x11111111;
-    *(volatile uint32_t*)(uintptr_t)(0x10000004) = 0xa5a5a5a5;
-    *(volatile uint32_t*)(uintptr_t)(0x10000008) = 0x5a5a5a5a;
-    *(volatile uint32_t*)(uintptr_t)(0x1000000c) = 0xa5a5a5a5;
-    mb();
-    debug(MEM_TEST, "ddr(%p): 0x%x, 0x%x, 0x%x, 0x%x", 
-            0x10000000,
-            *(volatile uint32_t*)(uintptr_t)(0x10000000),
-            *(volatile uint32_t*)(uintptr_t)(0x10000004),
-            *(volatile uint32_t*)(uintptr_t)(0x10000008),
-            *(volatile uint32_t*)(uintptr_t)(0x1000000c));
+    // Note: dram rw test can NOT be done as we need sim give us proper addr, this is done in task_test
 
     send_end_to_simulation();
 

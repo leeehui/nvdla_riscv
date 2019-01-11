@@ -28,11 +28,23 @@ void dla_task_test(void)
     ddr_dst = (ddr_dsth << 32) + ddr_dstl;
 
     *(volatile uint32_t*)(uintptr_t)(ddr_dst) = data;
+
+    // for ddr mem rw test
+    *(volatile uint32_t*)(uintptr_t)(ddr_dst + 4) = 0x5a5a5a5a;
+    *(volatile uint32_t*)(uintptr_t)(ddr_dst + 8) = 0xa5a5a5a5;
+    *(volatile uint32_t*)(uintptr_t)(ddr_dst + 12) = 0x5a5a5a5a;
     mb();
 
     debug(TASK_TEST, "t_addr: %p", t_addr);
     debug(TASK_TEST, "ddr_dst: %p", ddr_dst);
     debug(TASK_TEST, "data: 0x%x", data);
+    // for ddr mem rw test
+    debug(TASK_TEST, "ddr test: %p: 0x%x, 0x%x, 0x%x", 
+                    ddr_dst + 4,
+                    *(volatile uint32_t*)(uintptr_t)(ddr_dst + 4), 
+                    *(volatile uint32_t*)(uintptr_t)(ddr_dst + 8), 
+                    *(volatile uint32_t*)(uintptr_t)(ddr_dst + 12)
+                    );
 
     send_end_to_simulation();
 }
