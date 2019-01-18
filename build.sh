@@ -26,6 +26,7 @@ if [ $# -eq 3 ]; then
         cp nvdla.bin.dat  "${dir}/${output_name}.dat"
         cp ../nvdla.dump "${dir}/${output_name}.dump"
         cp ../nvdla.elf  "${dir}/${output_name}.elf"
+        cp ../nvdla.bin  "${dir}/${output_name}.bin"
         cp $dir /mnt/share -r
     else
         echo "invalid parameter 3"
