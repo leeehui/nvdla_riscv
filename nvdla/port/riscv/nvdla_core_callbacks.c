@@ -245,7 +245,9 @@ int32_t dla_data_write(void *driver_context, void *task_data,
     handles = task->address_list;
 
 
+    //TODO: confirm data actually flushed, be aware if smmu exists
 	memcpy((void *)(handles[dst].paddr + offset), src, size);
+    mb();
 
 	return ret;
 }
@@ -260,6 +262,7 @@ int32_t dla_data_read(void *driver_context, void *task_data,
 
     handles = task->address_list;
 
+    //TODO: confirm data actually flushed, be aware if smmu exists
 	memcpy(dst, (void *)(handles[src].paddr + offset), size);
 
 	return ret;
