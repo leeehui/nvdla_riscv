@@ -6,11 +6,22 @@
 
 #include "femto.h"
 
+void clean_log_buf(void)
+{
+    for (int i = 0; i < DLA_FPGA_LOG_BUF_SIZE; i = i+8)
+    {
+        *(volatile uint64_t *)(DLA_FPGA_LOG_BUF + i) = 0;
+        mb_always_required();
+    }
+}
+
+
 
 extern uint32_t task_notifier;
 int riscv_runtime(void)
 {
 
+    clean_log_buf();
 
     while(1) {
 

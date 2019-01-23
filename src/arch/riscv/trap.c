@@ -134,6 +134,7 @@ void trap_handler(int64_t mcause, uint64_t mip)
 {
     irq_id_t id = IRQ_NUM;
     irq_handler_t irq;
+    uint64_t mepc = read_csr(mepc);
 
     // interrupt
     if (mcause < 0)
@@ -161,8 +162,10 @@ void trap_handler(int64_t mcause, uint64_t mip)
     // synchronous exception
     else
     {
-        debug(TRAP, "synchronous exception.");
+        debug(TRAP, "synchronous exception: mcause(%p)-mepc(%p)", (uint64_t)mcause, mepc);
+
     }
 
 }
+
 

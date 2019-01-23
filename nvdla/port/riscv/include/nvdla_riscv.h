@@ -50,6 +50,7 @@ struct nvdla_mem_handle {
 
 struct nvdla_submit_task {
     uint32_t num_addresses;
+    uint32_t reserved;
     uint64_t base_address;
 };
 /**

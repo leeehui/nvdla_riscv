@@ -3,8 +3,10 @@
 #include <sys/stat.h>
 #include "femto.h"
 
-#define HEAP_SIZE (4*1024)
+#define HEAP_SIZE (8*1024)
 static unsigned char heap[HEAP_SIZE] __attribute__((section("heap_riscv")));
+
+static uint32_t counter = 0;
 
 /* override default write function for newlib */
 int _write(int file, char *ptr, int len)
@@ -12,8 +14,12 @@ int _write(int file, char *ptr, int len)
     int todo;
     for (todo=0; todo<len; todo++) {
         /* TODO: replace with real redirection function here */
-        *(volatile uint8_t *)(0xFFA881FFFF) = *ptr++;
-        mb_always_required();
+
+        if (counter < DLA_FPGA_LOG_BUF_SIZE)
+        {
+            *(volatile uint8_t *)(DLA_FPGA_LOG_BUF + (counter++)) = *ptr++;
+            mb_always_required();
+        }
         //console_dev->putchar(*ptr++);
     }
     return len;

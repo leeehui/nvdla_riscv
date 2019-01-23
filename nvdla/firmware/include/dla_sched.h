@@ -34,6 +34,7 @@ struct dla_task {
 	void *task_data;
 	/* task state */
 	uint32_t state;
+	uint32_t reserved;
 	/* Task base address */
 	uint64_t base;
 	/* start address of a list of dla_operation_container */

@@ -43,7 +43,7 @@ uint32_t dla_irq_notifier = 0;
 uint32_t task_notifier = 0;
 static void irq0_handler(void)
 {
-    debug(IRQ0, "irq0_handler.");
+    //debug(IRQ0, "irq0_handler.");
     if (riscv_csr_read(ARIANE_CSR_DLA_TASK_CONF))
     {
         debug(IRQ0, "new task.");
@@ -221,6 +221,8 @@ int32_t dla_get_dma_address(void *driver_context, void *task_data,
 {
 	int32_t ret = 0;
 
+    dla_debug("dla_get_dma_address.\n");
+
 	if (destination == DESTINATION_PROCESSOR) {
 		ret = dla_read_cpu_address(driver_context, task_data,
 						index, dst_ptr);
@@ -246,7 +248,7 @@ int32_t dla_data_write(void *driver_context, void *task_data,
 
 
     //TODO: confirm data actually flushed, be aware if smmu exists
-	memcpy((void *)(handles[dst].paddr + offset), src, size);
+	memcpy((void *)(handles[dst].paddr + handles[dst].offset + offset), src, size);
     mb();
 
 	return ret;
@@ -263,7 +265,7 @@ int32_t dla_data_read(void *driver_context, void *task_data,
     handles = task->address_list;
 
     //TODO: confirm data actually flushed, be aware if smmu exists
-	memcpy(dst, (void *)(handles[src].paddr + offset), size);
+	memcpy(dst, (void *)(handles[src].paddr + handles[src].offset + offset), size);
 
 	return ret;
 }

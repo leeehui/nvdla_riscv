@@ -28,6 +28,7 @@ if [ $# -eq 3 ]; then
         cp ../nvdla.elf  "${dir}/${output_name}.elf"
         cp ../nvdla.bin  "${dir}/${output_name}.bin"
         cp $dir /mnt/share -r
+        #scp ${dir}/${output_name}.bin root@10.64.4.20:/media/card/devmem/
     else
         echo "invalid parameter 3"
     fi

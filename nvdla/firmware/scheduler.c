@@ -783,6 +783,7 @@ dla_read_network_config(struct dla_engine *engine)
 	/**
 	 * Read operation descriptor list address from address list
 	 */
+    dla_debug("network.operation_desc_index: %d\n", network.operation_desc_index);
 	ret = dla_get_dma_address(engine->driver_context, task->task_data,
 				network.operation_desc_index,
 				(void *)&task->operation_desc_addr,
@@ -795,6 +796,7 @@ dla_read_network_config(struct dla_engine *engine)
 	/**
 	 * Read surface descriptor list address from address list
 	 */
+    dla_debug("network.surface_desc_index: %d\n", network.surface_desc_index);
 	ret = dla_get_dma_address(engine->driver_context, task->task_data,
 				network.surface_desc_index,
 				(void *)&task->surface_desc_addr,

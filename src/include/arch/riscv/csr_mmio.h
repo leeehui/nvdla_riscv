@@ -51,6 +51,9 @@ void send_irq_to_ap(void);
 #define     DLA_HW_INTR_MASK                (1<<0)
 #define     WDT_BITE_MASK                   (1<<1)
 
+#define     DLA_FPGA_LOG_BUF                    0xFFA881C000
+#define     DLA_FPGA_LOG_BUF_SIZE               0x4000
+
 #ifdef __cplusplus
 }
 #endif
