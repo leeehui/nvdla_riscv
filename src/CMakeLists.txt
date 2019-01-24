@@ -3,13 +3,17 @@ set(CMAKE_C_COMPILER    riscv64-unknown-elf-gcc)
 set(CMAKE_CXX_COMPILER  riscv64-unknown-elf-g++)
 
 # log controls
-add_definitions(-DMAIN=1) #-DMAIN=0 to remove log
-add_definitions(-DATOMIC=1)
-add_definitions(-DTRAP=1)
-add_definitions(-DIRQ0=1)
+add_definitions(-DMAIN=0) #-DMAIN=0 to remove log
+add_definitions(-DATOMIC=0)
+add_definitions(-DTRAP=0)
+add_definitions(-DIRQ0=0)
 add_definitions(-DDLA_REG_TEST=1)
 add_definitions(-DMEM_TEST=1)
 add_definitions(-DTASK_TEST=1)
+
+add_definitions(-DNVDLA_INFO_ON=0) #global debug switch for nvdla related info
+add_definitions(-DDEBUG_NETWORK_DATA=0) # switch just for network data
+
 
 set(NVDLA_DIR ../nvdla)
 set(STARTUP_DIR ./env)

@@ -96,34 +96,46 @@ static struct nvdla_config nvdla_config_small = {
 
 void dla_debug(const char *str, ...)
 {
+#if (NVDLA_INFO_ON==1)
 	va_list args;
 	va_start(args, str);
 	vprintf(str, args);
 	va_end(args);
+#else
+#endif
 }
 
 void dla_info(const char *str, ...)
 {
+#if (NVDLA_INFO_ON==1)
 	va_list args;
 	va_start(args, str);
 	vprintf(str, args);
 	va_end(args);
+#else
+#endif
 }
 
 void dla_warn(const char *str, ...)
 {
+#if (NVDLA_INFO_ON==1)
 	va_list args;
 	va_start(args, str);
 	vprintf(str, args);
 	va_end(args);
+#else
+#endif
 }
 
 void dla_error(const char *str, ...)
 {
+#if (NVDLA_INFO_ON==1)
 	va_list args;
 	va_start(args, str);
 	vprintf(str, args);
 	va_end(args);
+#else
+#endif
 }
 
 void *dla_memset(void *src, int ch, uint64_t len)

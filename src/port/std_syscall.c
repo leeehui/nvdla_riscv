@@ -3,7 +3,7 @@
 #include <sys/stat.h>
 #include "femto.h"
 
-#define HEAP_SIZE (8*1024)
+#define HEAP_SIZE (4*1024)
 static unsigned char heap[HEAP_SIZE] __attribute__((section("heap_riscv")));
 
 static uint32_t counter = 0;
