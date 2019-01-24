@@ -23,10 +23,14 @@ void send_irq_to_ap(void);
 #define     RISCV_CVSRAM_BASE               (RISCV_BASE + 0x900000)
 
 /* timer */
-#define     TIMER_CSR_BASE                (RISCV_PERIPH_BASE + 0x0000)
+#define     TIMER_CSR_BASE                  (RISCV_PERIPH_BASE + 0x0000)
 
 /* wdt */
-#define     WDT_CSR_BASE                  (RISCV_PERIPH_BASE + 0x1000)
+#define     WDT_CSR_BASE                    (RISCV_PERIPH_BASE + 0x1000)
+#define     WDT_REG_LOAD                    (WDT_CSR_BASE + 0x00) 
+#define     WDT_REG_VALUE                   (WDT_CSR_BASE + 0x04) 
+#define     WDT_REG_CONTROL                 (WDT_CSR_BASE + 0x08) 
+#define     WDT_REG_INTCLR                  (WDT_CSR_BASE + 0x0C) 
 
 /* dla csrs */
 #define     ARIANE_CSR_BASE                  (RISCV_PERIPH_BASE + 0x2000)
@@ -53,6 +57,8 @@ void send_irq_to_ap(void);
 
 #define     DLA_FPGA_LOG_BUF                    0xFFA881C000
 #define     DLA_FPGA_LOG_BUF_SIZE               0x4000
+
+#define     DLA_SIM_LOG_ADDR                    0xFFA881FFFF
 
 #ifdef __cplusplus
 }

@@ -162,8 +162,8 @@ void trap_handler(int64_t mcause, uint64_t mip)
     // synchronous exception
     else
     {
-        debug(TRAP, "synchronous exception: mcause(%p)-mepc(%p)", (uint64_t)mcause, mepc);
-
+        debug(TRAP, "synchronous exception: mepc(%p)-mcause(%s)", mepc, riscv_excp_names[mcause]);
+        while(1);
     }
 
 }

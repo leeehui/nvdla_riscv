@@ -12,7 +12,9 @@ auxval_t __auxv[] = {
 
 void arch_setup()
 {
+#if (QEMU_LOG==1)
 	__auxv[0].val = (uintptr_t)(&tohost < &fromhost ? &tohost : &fromhost);
     register_console(&console_htif);
     register_poweroff(&poweroff_htif);
+#endif
 }

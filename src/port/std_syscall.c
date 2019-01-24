@@ -14,13 +14,17 @@ int _write(int file, char *ptr, int len)
     int todo;
     for (todo=0; todo<len; todo++) {
         /* TODO: replace with real redirection function here */
-
+#if (FPGA_LOG==1)
         if (counter < DLA_FPGA_LOG_BUF_SIZE)
         {
             *(volatile uint8_t *)(DLA_FPGA_LOG_BUF + (counter++)) = *ptr++;
             mb_always_required();
         }
-        //console_dev->putchar(*ptr++);
+#elif (SIM_LOG==1)
+        *(volatile uint8_t *)(DLA_SIM_LOG_ADDR) = *ptr++;
+#elif (QEMU_LOG==1)
+        console_dev->putchar(*ptr++);
+#endif
     }
     return len;
 }

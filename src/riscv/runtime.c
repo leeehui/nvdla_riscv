@@ -25,7 +25,6 @@ int riscv_runtime(void)
 
     while(1) {
 
-
         // check if there is a new task or firmware stop request 
         wait_for_dla_irq(&task_notifier);
 
