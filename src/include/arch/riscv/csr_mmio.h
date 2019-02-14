@@ -24,6 +24,10 @@ void send_irq_to_ap(void);
 
 /* timer */
 #define     TIMER_CSR_BASE                  (RISCV_PERIPH_BASE + 0x0000)
+#define     TIMER_REG_CONTROL               (TIMER_CSR_BASE + 0x00) 
+#define     TIMER_REG_VALUE                 (TIMER_CSR_BASE + 0x04) 
+#define     TIMER_REG_RELOAD                (TIMER_CSR_BASE + 0x08) 
+#define     TIMER_REG_INTCLR                (TIMER_CSR_BASE + 0x0C) 
 
 /* wdt */
 #define     WDT_CSR_BASE                    (RISCV_PERIPH_BASE + 0x1000)
@@ -54,6 +58,9 @@ void send_irq_to_ap(void);
 
 #define     DLA_HW_INTR_MASK                (1<<0)
 #define     WDT_BITE_MASK                   (1<<1)
+
+#define     WDT_RESET_ENABLE                (1<<1)   //RESET bit in CONTROL reg
+#define     WDT_INT_ENABLE                  (1<<0)   //INT bit in CONTROL reg
 
 #define     DLA_FPGA_LOG_BUF                    0xFFA881C000
 #define     DLA_FPGA_LOG_BUF_SIZE               0x4000

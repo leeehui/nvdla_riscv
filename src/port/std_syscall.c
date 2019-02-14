@@ -22,6 +22,7 @@ int _write(int file, char *ptr, int len)
         }
 #elif (SIM_LOG==1)
         *(volatile uint8_t *)(DLA_SIM_LOG_ADDR) = *ptr++;
+        mb_always_required();
 #elif (QEMU_LOG==1)
         console_dev->putchar(*ptr++);
 #endif

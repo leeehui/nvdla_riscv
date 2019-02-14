@@ -14,8 +14,8 @@ add_definitions(-DNVDLA_INFO_ON=0) #global debug switch for nvdla related info
 add_definitions(-DDEBUG_NETWORK_DATA=0) # switch just for network data
 
 # one of the following is supposed to be 1
-add_definitions(-DFPGA_LOG=1) #
-add_definitions(-DSIM_LOG=0) #
+add_definitions(-DFPGA_LOG=0) #
+add_definitions(-DSIM_LOG=1) #
 add_definitions(-DQEMU_LOG=0) #
 
 
