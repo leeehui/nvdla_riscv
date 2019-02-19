@@ -65,6 +65,8 @@ void send_irq_to_ap(void);
 #define     DLA_FPGA_LOG_BUF                    0xFFA881C000
 #define     DLA_FPGA_LOG_BUF_SIZE               0x4000
 
+#define     RISCV_CVSRAM_SIZE                   0x200000
+
 #define     DLA_SIM_LOG_ADDR                    0xFFA881FFFF
 
 #ifdef __cplusplus
